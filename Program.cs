@@ -4,7 +4,7 @@ namespace BasicLibrary
 {
     internal class Program
     {
-        static List<(string BName, string BAuthor, int ID,int q)> Books = new List<(string BName, string BAuthor, int ID,int q)>();
+        static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\tasnim\\lib.txt";
         // test check out
         static void Main(string[] args)
@@ -15,7 +15,7 @@ namespace BasicLibrary
             {
                 Console.WriteLine("Welcome to Lirary");
                 Console.WriteLine("\n Enter A for Admin ,B for User:");
-     
+
 
                 string choice = Console.ReadLine();
 
@@ -96,38 +96,38 @@ namespace BasicLibrary
             do
             {
                 Console.WriteLine("\n Enter the char of operation you need :");
-            Console.WriteLine("\n A- Search Book");
-            Console.WriteLine("\n B- Borrow Books");
-            Console.WriteLine("\n c-  return Book");
-            Console.WriteLine("\n D-  Exit");
+                Console.WriteLine("\n A- Search Book");
+                Console.WriteLine("\n B- Borrow Books");
+                Console.WriteLine("\n c-return Book");
+                Console.WriteLine("\n D-Exit");
 
-            string choice = Console.ReadLine();
+                string choice = Console.ReadLine();
 
-            switch (choice)
-            {
-                case "A":
-                    SearchForBook();
-                    break;
+                switch (choice)
+                {
+                    case "A":
+                        SearchForBook();
+                        break;
 
-                case "B":
+                    case "B":
                         //BorrowBook();
-                    break;
+                        break;
 
-                case "C":
-                       // ReturnBook();
-                    break;
-                case"D":
-                    Console.WriteLine("Exit");
+                    case "C":
+                        // ReturnBook();
+                        break;
+                    case "D":
+                        Console.WriteLine("Exit");
                         ExitFlag = true;
-                    break;
-                default:
-                    Console.WriteLine("Sorry your choice was wrong");
-                    break;
+                        break;
+                    default:
+                        Console.WriteLine("Sorry your choice was wrong");
+                        break;
 
 
 
-               
-            }
+
+                }
             } while (ExitFlag != true);
         }
 
@@ -144,98 +144,120 @@ namespace BasicLibrary
 
             Console.WriteLine("Enter Book ID");
             int q = int.Parse(Console.ReadLine());
-            Books.Add((name, author, ID,q));
+            Books.Add((name, author, ID, q));
             Console.WriteLine("Book Added Succefully");
 
         }
 
 
         static void ViewAllBooks()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int BookNumber = 0;
+
+            for (int i = 0; i < Books.Count; i++)
             {
-                StringBuilder sb = new StringBuilder();
+                BookNumber = i + 1;
+                sb.Append("Book ").Append(BookNumber).Append(" name : ").Append(Books[i].BName);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append(" Author : ").Append(Books[i].BAuthor);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append(" ID : ").Append(Books[i].ID);
+                sb.AppendLine().AppendLine();
+                Console.WriteLine(sb.ToString());
+                sb.Clear();
 
-                int BookNumber = 0;
+            }
+        }
 
-                for (int i = 0; i < Books.Count; i++)
+        static void SearchForBook()
+        {
+            Console.WriteLine("Enter the book name you want");
+            string name = Console.ReadLine();
+            bool flag = false;
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                if (Books[i].BName == name)
                 {
-                    BookNumber = i + 1;
-                    sb.Append("Book ").Append(BookNumber).Append(" name : ").Append(Books[i].BName);
-                    sb.AppendLine();
-                    sb.Append("Book ").Append(BookNumber).Append(" Author : ").Append(Books[i].BAuthor);
-                    sb.AppendLine();
-                    sb.Append("Book ").Append(BookNumber).Append(" ID : ").Append(Books[i].ID);
-                    sb.AppendLine().AppendLine();
-                    Console.WriteLine(sb.ToString());
-                    sb.Clear();
-
+                    Console.WriteLine("Book Author is : " + Books[i].BAuthor);
+                    flag = true;
+                    break;
                 }
             }
 
-            static void SearchForBook()
+            if (flag != true)
+            { Console.WriteLine("book not found"); }
+        }
+
+        static void LoadBooksFromFile()
+        {
+            try
             {
-                Console.WriteLine("Enter the book name you want");
-                string name = Console.ReadLine();
-                bool flag = false;
-
-                for (int i = 0; i < Books.Count; i++)
+                if (File.Exists(filePath))
                 {
-                    if (Books[i].BName == name)
+                    using (StreamReader reader = new StreamReader(filePath))
                     {
-                        Console.WriteLine("Book Author is : " + Books[i].BAuthor);
-                        flag = true;
-                        break;
-                    }
-                }
-
-                if (flag != true)
-                { Console.WriteLine("book not found"); }
-            }
-
-            static void LoadBooksFromFile()
-            {
-                try
-                {
-                    if (File.Exists(filePath))
-                    {
-                        using (StreamReader reader = new StreamReader(filePath))
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
                         {
-                            string line;
-                            while ((line = reader.ReadLine()) != null)
+                            var parts = line.Split('|');
+                            if (parts.Length == 3)
                             {
-                                var parts = line.Split('|');
-                                if (parts.Length == 3)
-                                {
-                                    Books.Add((parts[0], parts[1], int.Parse(parts[2]), int.Parse(parts[3])));
-                                }
+                                Books.Add((parts[0], parts[1], int.Parse(parts[2]), int.Parse(parts[3])));
                             }
                         }
-                        Console.WriteLine("Books loaded from file successfully.");
                     }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error loading from file: {ex.Message}");
+                    Console.WriteLine("Books loaded from file successfully.");
                 }
             }
-
-            static void SaveBooksToFile()
+            catch (Exception ex)
             {
-                try
+                Console.WriteLine($"Error loading from file: {ex.Message}");
+            }
+        }
+
+        static void SaveBooksToFile()
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(filePath))
                 {
-                    using (StreamWriter writer = new StreamWriter(filePath))
+                    foreach (var book in Books)
                     {
-                        foreach (var book in Books)
-                        {
-                            writer.WriteLine($"{book.BName}|{book.BAuthor}|{book.ID}");
-                        }
+                        writer.WriteLine($"{book.BName}|{book.BAuthor}|{book.ID}|{book.q}");
                     }
-                    Console.WriteLine("Books saved to file successfully.");
                 }
-                catch (Exception ex)
+                Console.WriteLine("Books saved to file successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving to file: {ex.Message}");
+            }
+        }
+
+        static void BorrowBook() {
+
+            Console.WriteLine("Enter Book Name you want to borrow");
+            string name = Console.ReadLine();
+            bool flag = false;
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                if (Books[i].BName == name)
                 {
-                    Console.WriteLine($"Error saving to file: {ex.Message}");
+                    Console.WriteLine("Book is available for borrowing ");
+                    
+                    flag = true;
+                    break;
                 }
             }
 
-        } }
+            if (flag != true)
+            { Console.WriteLine("book not found"); }
+
+        }
+    } 
+}
 
