@@ -4,8 +4,8 @@ namespace BasicLibrary
 {
     internal class Program
     {
-        static List<(string BName, string BAuthor, int ID)> Books = new List<(string BName, string BAuthor, int ID)>();
-        static string filePath = "C:\\Users\\Karim\\Downloads\\OutSystem_Course\\GitHubRepos\\Data\\lib.txt";
+        static List<(string BName, string BAuthor, int ID,int q)> Books = new List<(string BName, string BAuthor, int ID,int q)>();
+        static string filePath = "C:\\Users\\Codeline User\\Documents\\tasnim\\lib.txt";
         // test check out
         static void Main(string[] args)
         {// downloaded form ahmed device 
@@ -15,10 +15,7 @@ namespace BasicLibrary
             {
                 Console.WriteLine("Welcome to Lirary");
                 Console.WriteLine("\n Enter A for Admin ,B for User:");
-                Console.WriteLine("\n A- Add New Book");
-                Console.WriteLine("\n B- Display All Books");
-                Console.WriteLine("\n C- Search for Book by Name");
-                Console.WriteLine("\n D- Save and Exit");
+     
 
                 string choice = Console.ReadLine();
 
@@ -56,6 +53,7 @@ namespace BasicLibrary
 
                 Console.WriteLine("\n Enter the char of operation you need :");
                 Console.WriteLine("\n A- Add New Book");
+                Console.WriteLine("\n A- Search Book");
                 Console.WriteLine("\n B- Display All Books");
                 Console.WriteLine("\n D- Save and Exit");
 
@@ -91,9 +89,13 @@ namespace BasicLibrary
         }
         static void userMenu()
         {
-            
-            
-            Console.WriteLine("\n Enter the char of operation you need :");
+
+
+            bool ExitFlag = false;
+
+            do
+            {
+                Console.WriteLine("\n Enter the char of operation you need :");
             Console.WriteLine("\n A- Search Book");
             Console.WriteLine("\n B- Borrow Books");
             Console.WriteLine("\n c-  return Book");
@@ -108,14 +110,15 @@ namespace BasicLibrary
                     break;
 
                 case "B":
-
+                        //BorrowBook();
                     break;
 
                 case "C":
-
+                       // ReturnBook();
                     break;
                 case"D":
                     Console.WriteLine("Exit");
+                        ExitFlag = true;
                     break;
                 default:
                     Console.WriteLine("Sorry your choice was wrong");
@@ -123,7 +126,9 @@ namespace BasicLibrary
 
 
 
+               
             }
+            } while (ExitFlag != true);
         }
 
         static void AddnNewBook()
@@ -137,7 +142,9 @@ namespace BasicLibrary
             Console.WriteLine("Enter Book ID");
             int ID = int.Parse(Console.ReadLine());
 
-            Books.Add((name, author, ID));
+            Console.WriteLine("Enter Book ID");
+            int q = int.Parse(Console.ReadLine());
+            Books.Add((name, author, ID,q));
             Console.WriteLine("Book Added Succefully");
 
         }
@@ -198,7 +205,7 @@ namespace BasicLibrary
                                 var parts = line.Split('|');
                                 if (parts.Length == 3)
                                 {
-                                    Books.Add((parts[0], parts[1], int.Parse(parts[2])));
+                                    Books.Add((parts[0], parts[1], int.Parse(parts[2]), int.Parse(parts[3])));
                                 }
                             }
                         }
