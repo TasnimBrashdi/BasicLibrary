@@ -5,7 +5,7 @@ namespace BasicLibrary
     internal class Program
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
-        static string filePath = "C:\\Users\\Codeline User\\Documents\\tasnim\\lib.txt";
+        static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         // test check out
         static void Main(string[] args)
         {// downloaded form ahmed device 
@@ -53,8 +53,8 @@ namespace BasicLibrary
 
                 Console.WriteLine("\n Enter the char of operation you need :");
                 Console.WriteLine("\n A- Add New Book");
-                Console.WriteLine("\n A- Search Book");
-                Console.WriteLine("\n B- Display All Books");
+                Console.WriteLine("\n B- Search Book");
+                Console.WriteLine("\n C- Display All Books");
                 Console.WriteLine("\n D- Save and Exit");
 
                 string choice = Console.ReadLine();
@@ -85,6 +85,11 @@ namespace BasicLibrary
 
 
                 }
+
+                Console.WriteLine("press any key to continue");
+                string cont = Console.ReadLine();
+
+                Console.Clear();
             } while (ExitFlag != true);
         }
         static void userMenu()
@@ -98,8 +103,8 @@ namespace BasicLibrary
                 Console.WriteLine("\n Enter the char of operation you need :");
                 Console.WriteLine("\n A- Search Book");
                 Console.WriteLine("\n B- Borrow Books");
-                Console.WriteLine("\n c-return Book");
-                Console.WriteLine("\n D-Exit");
+                Console.WriteLine("\n c- return Book");
+                Console.WriteLine("\n D- Exit");
 
                 string choice = Console.ReadLine();
 
@@ -110,11 +115,11 @@ namespace BasicLibrary
                         break;
 
                     case "B":
-                        //BorrowBook();
+                        BorrowBook();
                         break;
 
                     case "C":
-                        // ReturnBook();
+                        ReturnBook();
                         break;
                     case "D":
                         Console.WriteLine("Exit");
@@ -128,6 +133,11 @@ namespace BasicLibrary
 
 
                 }
+
+                Console.WriteLine("press any key to continue");
+                string cont = Console.ReadLine();
+
+                Console.Clear();
             } while (ExitFlag != true);
         }
 
@@ -142,7 +152,7 @@ namespace BasicLibrary
             Console.WriteLine("Enter Book ID");
             int ID = int.Parse(Console.ReadLine());
 
-            Console.WriteLine("Enter Book ID");
+            Console.WriteLine("Enter Book quntity");
             int q = int.Parse(Console.ReadLine());
             Books.Add((name, author, ID, q));
             Console.WriteLine("Book Added Succefully");
@@ -164,6 +174,8 @@ namespace BasicLibrary
                 sb.Append("Book ").Append(BookNumber).Append(" Author : ").Append(Books[i].BAuthor);
                 sb.AppendLine();
                 sb.Append("Book ").Append(BookNumber).Append(" ID : ").Append(Books[i].ID);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append(" Quntity : ").Append(Books[i].q);
                 sb.AppendLine().AppendLine();
                 Console.WriteLine(sb.ToString());
                 sb.Clear();
@@ -222,7 +234,7 @@ namespace BasicLibrary
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(filePath))
+                using (StreamWriter writer = new StreamWriter(filePath,true))
                 {
                     foreach (var book in Books)
                     {
@@ -248,7 +260,8 @@ namespace BasicLibrary
                 if (Books[i].BName == name)
                 {
                     Console.WriteLine("Book is available for borrowing ");
-                    
+                    int newq = Books[i].q - 1;
+                    Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
                     flag = true;
                     break;
                 }
@@ -256,6 +269,27 @@ namespace BasicLibrary
 
             if (flag != true)
             { Console.WriteLine("book not found"); }
+
+        }
+        static void ReturnBook()
+        {
+            Console.WriteLine("Enter Book Name you want to return");
+            string name = Console.ReadLine();
+            bool flag = false;
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                if (Books[i].BName == name)
+                {
+                    Console.WriteLine("Book has been retrieved ");
+                    int newq = Books[i].q + 1;
+                    Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                    flag = true;
+                    break;
+                }
+            }
+            if (flag != true)
+            { Console.WriteLine("Enter correct name"); }
 
         }
     } 
