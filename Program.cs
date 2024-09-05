@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Xml.Linq;
 
 namespace BasicLibrary
 {
@@ -9,6 +11,7 @@ namespace BasicLibrary
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
+        static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
 
         static string nameReturn;
         static string nameBorrow;
@@ -275,7 +278,7 @@ namespace BasicLibrary
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(filePath,true))
+                using (StreamWriter writer = new StreamWriter(filePath))
                 {
                     foreach (var book in Books)
                     {
@@ -303,6 +306,7 @@ namespace BasicLibrary
                     Console.WriteLine("Book is available for borrowing ");
                     int newq = Books[i].q - 1;
                     Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                    Filereport(filereport, (Books[i].BName, Books[i].BAuthor, Books[1].ID, Books[i].q));
                     flag = true;
                     break;
                 }
@@ -310,7 +314,7 @@ namespace BasicLibrary
 
             if (flag != true)
             { Console.WriteLine("book not found"); }
-       
+           
 
         }
         static void ReturnBook()
@@ -326,6 +330,7 @@ namespace BasicLibrary
                     Console.WriteLine("Book has been retrieved ");
                     int newq = Books[i].q + 1;
                     Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                    returnbook(filereport, (Books[i].BName, Books[i].BAuthor, Books[1].ID, Books[i].q));
                     flag = true;
                     break;
                 }
@@ -413,6 +418,67 @@ namespace BasicLibrary
 
             if (flag != true)
             { Console.WriteLine("book not found\n"); }
+        }
+        static void Filereport(string filereport, (string BName, string BAuthor, int ID, int q) Books)
+        {
+
+            
+                StringBuilder Brep = new StringBuilder();
+                Brep.Append("            Book's Borrow: ");
+                Brep.AppendLine();
+                Brep.Append("-----------------------------------------\n");
+                Brep.Append("Book's Name: ").Append(Books.BName);
+                Brep.AppendLine();
+                Brep.Append("Authoer's Name: ").Append(Books.BAuthor);
+                Brep.AppendLine();
+                Brep.Append("Book's Id: ").Append(Books.ID);
+                Brep.AppendLine();
+               
+
+
+            using (StreamWriter report = new StreamWriter(filereport, true))
+            {
+
+
+
+                string Br = Books.ToString();
+
+                report.WriteLine(Brep.ToString());
+                report.WriteLine("Date and Time:");
+    
+                report.WriteLine(DateTime.Now);
+            }
+
+
+        }
+        static void returnbook(string filereport, (string BName, string BAuthor, int ID, int q) Books)
+        {
+            StringBuilder Bretun = new StringBuilder();
+            Bretun.Append("           Book's Return: ");
+            Bretun.AppendLine();
+            Bretun.Append("-----------------------------------------\n");
+            Bretun.Append("Book's Name: ").Append(Books.BName);
+            Bretun.AppendLine();
+            Bretun.Append("Authoer's Name: ").Append(Books.BAuthor);
+            Bretun.AppendLine();
+            Bretun.Append("Book's Id: ").Append(Books.ID);
+            Bretun.AppendLine();
+         
+
+
+            using (StreamWriter report = new StreamWriter(filereport, true))
+            {
+
+
+
+                string Bret = Books.ToString();
+
+                report.WriteLine(Bretun.ToString());
+                report.WriteLine("Date and Time:");
+                report.WriteLine("----------------");
+                report.WriteLine(DateTime.Now);
+            }
+
         }
     }
     }
