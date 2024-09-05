@@ -10,6 +10,8 @@ namespace BasicLibrary
     internal class Program
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
+        static List<(string email, string pas, int ID)> Admin = new List<(string email, string pas, int ID)>();
+        static List<(string Uemail, string Upas, int UID)> User = new List<(string Uemail, string Upas, int UID)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
 
@@ -20,10 +22,12 @@ namespace BasicLibrary
         {// downloaded form ahmed device 
             bool ExitFlag = false;
             LoadBooksFromFile();
+
+
             do
             {
                 Console.WriteLine("Welcome to Lirary");
-                Console.WriteLine("\n Enter A for Admin ,B for User:");
+                Console.WriteLine("\n Enter A for Admin ,B for User, C New Register:");
 
 
                 string choice = Console.ReadLine()?.ToUpper();
@@ -37,7 +41,23 @@ namespace BasicLibrary
                     case "B":
                         userMenu();
                         break;
+                    case "C":
+                        Console.WriteLine("Chose 1 for admin ,2 for user");
+                        int cho=int.Parse(Console.ReadLine());
+                        if (cho == 1)
+                        {
+                            RegisterAdmin();
+                        }
+                        else if(cho==2)
+                        {
+                            RegisterUser();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Please chose correct chois");
+                        }
 
+                        break;
                     default:
                         Console.WriteLine("Sorry your choice was wrong");
                         break;
@@ -479,6 +499,28 @@ namespace BasicLibrary
                 report.WriteLine(DateTime.Now);
             }
 
+        }
+        static void RegisterAdmin()
+        {
+
+            int id = 0;
+                Console.WriteLine("Ener your Email");
+                string email = Console.ReadLine();
+                Console.WriteLine("Ener your Password");
+                string pas = Console.ReadLine();
+                Admin.Add((email, pas, id + 1));
+               Console.WriteLine("Admin Added Succefull\n");
+    
+        }
+        static void RegisterUser()
+        {
+            int id = 0;
+            Console.WriteLine("Ener your Email");
+            string email = Console.ReadLine();
+            Console.WriteLine("Ener your Password");
+            string pas = Console.ReadLine();
+            User.Add((email, pas, id + 1));
+            Console.WriteLine("User Added Succefull\n");
         }
     }
     }
