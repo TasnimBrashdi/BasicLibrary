@@ -14,6 +14,8 @@ namespace BasicLibrary
         static List<(string Uemail, string Upas, int UID)> User = new List<(string Uemail, string Upas, int UID)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
+        static string fileuser = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
+        static string fileadmin = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";
 
         static string nameReturn;
         static string nameBorrow;
@@ -42,7 +44,7 @@ namespace BasicLibrary
                         userMenu();
                         break;
                     case "C":
-                        Console.WriteLine("Chose 1 for admin ,2 for user");
+                        Console.WriteLine("Choose 1 for admin ,2 for user");
                         int cho=int.Parse(Console.ReadLine());
                         if (cho == 1)
                         {
@@ -54,7 +56,7 @@ namespace BasicLibrary
                         }
                         else
                         {
-                            Console.WriteLine("Please chose correct chois");
+                            Console.WriteLine("Please choose correct chois");
                         }
 
                         break;
@@ -521,6 +523,44 @@ namespace BasicLibrary
             string pas = Console.ReadLine();
             User.Add((email, pas, id + 1));
             Console.WriteLine("User Added Succefull\n");
+        }
+        static void SaveAdminToFile()
+      
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fileadmin))
+                {
+                    foreach (var a in Admin)
+                    {
+                        writer.WriteLine($"{a.email}|{a.pas}|{a.ID}");
+                    }
+                }
+                Console.WriteLine("Admin saved to file successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving to file: {ex.Message}");
+            }
+        }
+        static void SaveUserToFile()
+
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fileuser))
+                {
+                    foreach (var u in User)
+                    {
+                        writer.WriteLine($"{u.Uemail}|{u.Upas}|{u.UID}");
+                    }
+                }
+                Console.WriteLine("User saved to file successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving to file: {ex.Message}");
+            }
         }
     }
     }
