@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Immutable;
+using System.Reflection;
+using System.Text;
 
 namespace BasicLibrary
 {
@@ -6,6 +9,7 @@ namespace BasicLibrary
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
+        static int id;
         static string nameReturn;
         static string nameBorrow;
         // test check out
@@ -57,7 +61,9 @@ namespace BasicLibrary
                 Console.WriteLine("\n A- Add New Book");
                 Console.WriteLine("\n B- Display All Books");
                 Console.WriteLine("\n C- Search Book");
-                Console.WriteLine("\n D- Save and Exit");
+                Console.WriteLine("\n D- Edit Book");
+                Console.WriteLine("\n E- Remove Book");
+                Console.WriteLine("\n F- Save and Exit");
 
                 string choice = Console.ReadLine()?.ToUpper();
 
@@ -74,8 +80,14 @@ namespace BasicLibrary
                     case "C":
                         SearchForBook();
                         break;
-
                     case "D":
+                        EditBook();
+                        break;
+                    case "E":
+                        //RemoveBook();
+                        break;
+
+                    case "F":
                         SaveBooksToFile();
                         ExitFlag = true;
                         break;
@@ -148,29 +160,35 @@ namespace BasicLibrary
 
         static void AddnNewBook()
         {
-            Console.WriteLine("Enter Book Name");
-            string name = Console.ReadLine();
 
-            Console.WriteLine("Enter Book Author");
-            string author = Console.ReadLine();
-
-            Console.WriteLine("Enter Book ID");
-            int ID;
-            while (!int.TryParse(Console.ReadLine(), out ID)|| ID<0)
+            Console.WriteLine("Enter number of Books you want to add:");
+            int Nbooks;
+            while (!int.TryParse(Console.ReadLine(), out Nbooks) || Nbooks <= 0)
             {
-                Console.WriteLine("Invalid ID.");
+                Console.Write("Invalid input.");
             }
-
-
-            Console.WriteLine("Enter Book quntity");
-            int q;
-            while (!int.TryParse(Console.ReadLine(), out q) || q <= 0)
+            for (int i = 0; i < Nbooks; i++)
             {
-                Console.Write("Quntity must be number and greater than zero .");
-            }
-            Books.Add((name, author, ID, q));
-            Console.WriteLine("Book Added Succefully");
 
+                Console.WriteLine($"Enter Book {i + 1}| Name: ");
+                string name = Console.ReadLine();
+
+                Console.WriteLine($"Enter Book {i + 1}| Author: ");
+                string author = Console.ReadLine();
+
+
+                Console.WriteLine($"Enter Book {i + 1}| quntity:");
+                int q;
+                while (!int.TryParse(Console.ReadLine(), out q) || q <= 0)
+                {
+                    Console.Write("Quntity must be number and greater than zero .");
+                }
+                int nid = ++id;
+                Books.Add((name, author, nid, q));
+                Console.WriteLine("Book Added Succefull\n");
+            }
+            SaveBooksToFile();
+            ViewAllBooks();
         }
 
 
@@ -183,13 +201,13 @@ namespace BasicLibrary
             for (int i = 0; i < Books.Count; i++)
             {
                 BookNumber = i + 1;
-                sb.Append("Book ").Append(BookNumber).Append(" name : ").Append(Books[i].BName);
+                sb.Append("Book ").Append(BookNumber).Append("| name : ").Append(Books[i].BName);
                 sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append(" Author : ").Append(Books[i].BAuthor);
+                sb.Append("Book ").Append(BookNumber).Append("| Author : ").Append(Books[i].BAuthor);
                 sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append(" ID : ").Append(Books[i].ID);
+                sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].ID);
                 sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append(" Quntity : ").Append(Books[i].q);
+                sb.Append("Book ").Append(BookNumber).Append("| Quntity : ").Append(Books[i].q);
                 sb.AppendLine().AppendLine();
                 Console.WriteLine(sb.ToString());
                 sb.Clear();
@@ -238,7 +256,7 @@ namespace BasicLibrary
                         while ((line = reader.ReadLine()) != null)
                         {
                             var parts = line.Split('|');
-                            if (parts.Length == 3)
+                            if (parts.Length == 4)
                             {
                                 Books.Add((parts[0], parts[1], int.Parse(parts[2]), int.Parse(parts[3])));
                             }
@@ -272,7 +290,7 @@ namespace BasicLibrary
             }
         }
 
-        static void BorrowBook() {
+        static void BorrowBook()    {
 
             Console.WriteLine("Enter Book Name you want to borrow");
             nameBorrow = Console.ReadLine();
@@ -315,6 +333,62 @@ namespace BasicLibrary
             { Console.WriteLine(" This book not availabe or that has not been  borrowed , mybe you Enter wrong name"); }
 
         }
-    } 
-}
+        static void EditBook()
+        {
+            Console.Write("Enter the ID Book  to edit: ");
+            int IdB =int.Parse( Console.ReadLine());
+            bool flag = false;
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                if (Books[i].ID == IdB)
+                {
+                    Console.Write(" 1.Book's Name\n 2.Author's Name\n 3.quntity\n ");
+                    int ChoiceEdit;
+                    while (!int.TryParse(Console.ReadLine(), out ChoiceEdit) || ChoiceEdit <= 0)
+                    {
+                        Console.Write("Invalid input.");
+                    }
+                    switch (ChoiceEdit)
+                    {
+                        case 1:
+                            Console.Write("Enter the new bOOK'S NAME: ");
+                            string editname = Console.ReadLine();
+                            Books[i] = (editname, Books[i].BAuthor, IdB, Books[i].q);
+                            Console.Write(" bOOK'S NAME UPDATED\n ");
+
+                            break;
+                        case 2:
+                            Console.Write("Enter the new AUTHOR'S NAME: ");
+                            string editAuth = Console.ReadLine();
+                            Books[i] = (Books[i].BName,editAuth, IdB, Books[i].q);
+                            Console.Write(" AUTHOR'S NAME UPDATED\n ");
+                            break;
+                        case 3:
+                            Console.Write("Enter the new bOOK'S Quntity: ");
+                           int newq =int.Parse( Console.ReadLine());
+                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB,newq);
+                            Console.Write(" bOOK'S NAME UPDATED\n ");
+                            break;
+                        default:
+                            Console.WriteLine("Invalid input");
+                            break;
+                    }
+                    SaveBooksToFile();
+
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (flag != true)
+            { Console.WriteLine("book not found\n"); }
+          
+            ViewAllBooks();
+
+        }
+    }
+    }
+    
+
 
