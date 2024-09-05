@@ -9,7 +9,7 @@ namespace BasicLibrary
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
-        static int id;
+
         static string nameReturn;
         static string nameBorrow;
         // test check out
@@ -63,7 +63,7 @@ namespace BasicLibrary
                 Console.WriteLine("\n C- Search Book");
                 Console.WriteLine("\n D- Edit Book");
                 Console.WriteLine("\n E- Remove Book");
-                Console.WriteLine("\n F- Save and Exit");
+                Console.WriteLine("\n F- log out");
 
                 string choice = Console.ReadLine()?.ToUpper();
 
@@ -84,11 +84,11 @@ namespace BasicLibrary
                         EditBook();
                         break;
                     case "E":
-                        //RemoveBook();
+                        RemoveBook();
                         break;
 
                     case "F":
-                        SaveBooksToFile();
+                        Console.WriteLine("You have succeessfully logged out");
                         ExitFlag = true;
                         break;
 
@@ -119,7 +119,7 @@ namespace BasicLibrary
                 Console.WriteLine("\n A- Search Book");
                 Console.WriteLine("\n B- Borrow Books");
                 Console.WriteLine("\n C- return Book");
-                Console.WriteLine("\n D- Exit");
+                Console.WriteLine("\n D- Log Out");
 
                 string choice = Console.ReadLine()?.ToUpper(); 
 
@@ -139,7 +139,7 @@ namespace BasicLibrary
                         ReturnBook();
                         break;
                     case "D":
-                        SaveBooksToFile();
+                        Console.WriteLine("You have succeessfully logged out");
                         ExitFlag = true;
                         break;
                     default:
@@ -183,8 +183,8 @@ namespace BasicLibrary
                 {
                     Console.Write("Quntity must be number and greater than zero .");
                 }
-                int nid = ++id;
-                Books.Add((name, author, nid, q));
+           
+                Books.Add((name, author, i+1, q));
                 Console.WriteLine("Book Added Succefull\n");
             }
             SaveBooksToFile();
@@ -310,6 +310,7 @@ namespace BasicLibrary
 
             if (flag != true)
             { Console.WriteLine("book not found"); }
+       
 
         }
         static void ReturnBook()
@@ -331,10 +332,12 @@ namespace BasicLibrary
             }
             if (flag != true)
             { Console.WriteLine(" This book not availabe or that has not been  borrowed , mybe you Enter wrong name"); }
+            
 
         }
         static void EditBook()
         {
+            ViewAllBooks();
             Console.Write("Enter the ID Book  to edit: ");
             int IdB =int.Parse( Console.ReadLine());
             bool flag = false;
@@ -386,6 +389,30 @@ namespace BasicLibrary
           
             ViewAllBooks();
 
+        }
+        static void RemoveBook()
+        {
+            ViewAllBooks();
+            Console.Write("Enter the ID Book  to remove: ");
+            int IdB = int.Parse(Console.ReadLine());
+            bool flag = false;
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                if (Books[i].ID == IdB)
+                {
+                    Books.RemoveAt(i);  
+                    Console.Write("Book removed succeessfully\n");
+                   
+                    SaveBooksToFile();
+
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (flag != true)
+            { Console.WriteLine("book not found\n"); }
         }
     }
     }
