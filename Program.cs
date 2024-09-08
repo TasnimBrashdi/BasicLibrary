@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
@@ -11,7 +12,7 @@ namespace BasicLibrary
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static List<(string email, string pas, int ID)> Admin = new List<(string email, string pas, int ID)>();
-        static List<( string username,string Uemail, string Upas, int UID)> User = new List<(string username,string Uemail, string Upas, int UID)>();
+        static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
         static string fileuser = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
@@ -19,6 +20,7 @@ namespace BasicLibrary
         static string usernam;
         static string nameReturn;
         static string nameBorrow;
+        static int TotalBooks=0;
         static int nextIdUser = 1;
         static int nextIdAdmin = 1;
         // test check out
@@ -26,7 +28,7 @@ namespace BasicLibrary
         {// downloaded form ahmed device 
             bool ExitFlag = false;
             LoadBooksFromFile();
-
+            TotalBook();
             try
             {
                 do
@@ -49,9 +51,9 @@ namespace BasicLibrary
 
                             break;
                         case "C":
-                           
+
                             RegisterUser();
-                            
+
                             break;
                         default:
                             Console.WriteLine("Sorry your choice was wrong");
@@ -67,8 +69,10 @@ namespace BasicLibrary
                     Console.Clear();
 
                 } while (ExitFlag != true);
-                } catch (Exception ex) {
-                Console.WriteLine("ERROR"+ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR" + ex.Message);
             }
         }
         static void adminMenu()
@@ -326,7 +330,9 @@ namespace BasicLibrary
                         Console.WriteLine("Book is available for borrowing ");
                         int newq = Books[i].q - 1;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq));
+                        TotalBooks--;
+
+                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks);
                         flag = true;
                         break;
                     }
@@ -335,10 +341,11 @@ namespace BasicLibrary
                 if (flag != true)
                 { Console.WriteLine("book not found"); }
             }
-            catch(Exception ex) { 
-                
-                Console.WriteLine("ERROR"+ex.Message);
-            
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("ERROR" + ex.Message);
+
             }
 
         }
@@ -347,29 +354,35 @@ namespace BasicLibrary
             Console.WriteLine("Enter Book Name you want to return");
             nameReturn = Console.ReadLine();
             bool flag = false;
-            try { 
-            for (int i = 0; i < Books.Count; i++)
+            try
             {
-                if (nameBorrow == nameReturn)
+                for (int i = 0; i < Books.Count; i++)
                 {
-                    Console.WriteLine("Book has been retrieved ");
-                    int newq = Books[i].q + 1;
-                    Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-                    returnbookfile(filereport,usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq));
-                    flag = true;
-                    break;
-                }
-            }
-            if (flag != true)
-            { Console.WriteLine(" This book not availabe or that has not been  borrowed , mybe you Enter wrong name"); }
-        }
-            catch(Exception ex) { 
-                
-                Console.WriteLine("ERROR"+ex.Message);
-            
-            }
+                    if (nameBorrow == nameReturn)
+                    {
+                        Console.WriteLine("Book has been retrieved ");
+                        int newq = Books[i].q + 1;
+                        Books[i] = (nameReturn, Books[i].BAuthor, Books[i].ID, newq);
+                        TotalBooks++;
 
-}
+                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[1].ID, Books[i].q),TotalBooks);
+                       
+                        flag = true;
+                        break;
+                    }
+
+                }
+                if (flag != true)
+                { Console.WriteLine(" This book not availabe or that has not been  borrowed , mybe you Enter wrong name"); }
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine("ERROR" + ex.Message);
+
+            }
+           
+        }
         static void EditBook()
         {
             ViewAllBooks();
@@ -450,7 +463,7 @@ namespace BasicLibrary
             { Console.WriteLine("book not found\n"); }
         }
 
-        static void Filereport(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books)
+        static void Filereport(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books,int totalbooks)
         {
 
 
@@ -471,7 +484,8 @@ namespace BasicLibrary
             Brep.Append("Number of Books available: ").Append(Books.q);
             Brep.AppendLine();
 
-
+            Brep.Append("Total Books: ").Append(totalbooks);
+            Brep.AppendLine();
             using (StreamWriter report = new StreamWriter(filereport, true))
             {
 
@@ -487,7 +501,7 @@ namespace BasicLibrary
 
 
         }
-        static void returnbookfile(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books)
+        static void returnbookfile(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books, int totalbooks)
         {
             StringBuilder Bretun = new StringBuilder();
             Bretun.Append("\n_______Book's Return:________");
@@ -505,8 +519,8 @@ namespace BasicLibrary
 
             Bretun.Append("Number of Books available: ").Append(Books.q);
             Bretun.AppendLine();
-
-
+            Bretun.Append("Total Books: ").Append(totalbooks);
+            Bretun.AppendLine();
 
             using (StreamWriter report = new StreamWriter(filereport, true))
             {
@@ -517,12 +531,12 @@ namespace BasicLibrary
 
                 report.WriteLine(Bretun.ToString());
                 report.WriteLine("Date and Time:");
-     
+
                 report.WriteLine(DateTime.Now);
             }
 
         }
-      
+
         static bool IsValidEmail(string email)
         {
 
@@ -656,31 +670,31 @@ namespace BasicLibrary
                 return;
             }
             bool flag = false;
-                try
+            try
+            {
+                for (int i = 0; i < User.Count; i++)
                 {
-                    for (int i = 0; i < User.Count; i++)
+                    if (User[i].username == usernam && User[i].Upas == pas)
                     {
-                        if (User[i].username == usernam && User[i].Upas == pas)
-                        {
-                            Console.WriteLine($"           WELCOME: {usernam} ");
-                            flag = true;
-                            userMenu();
-                            break;
-                        }
+                        Console.WriteLine($"           WELCOME: {usernam} ");
+                        flag = true;
+                        userMenu();
+                        break;
                     }
-
-                    if (flag != true)
-                    { Console.WriteLine("User not found Or input invaild"); }
                 }
 
-                catch (Exception e)
-                {
-                    Console.WriteLine("Erorr" + e.Message);
+                if (flag != true)
+                { Console.WriteLine("User not found Or input invaild"); }
+            }
 
-                }
+            catch (Exception e)
+            {
+                Console.WriteLine("Erorr" + e.Message);
 
-            
-            
+            }
+
+
+
         }
         static void LogAdmin()
         {
@@ -695,33 +709,44 @@ namespace BasicLibrary
                 return;
             }
             bool flag = false;
-                try
+            try
+            {
+                for (int i = 0; i < Admin.Count; i++)
                 {
-                    for (int i = 0; i < Admin.Count; i++)
+                    if (Admin[i].email == email && Admin[i].pas == pas)
                     {
-                        if (Admin[i].email == email && Admin[i].pas == pas)
-                        {
-                            Console.WriteLine("_______________WELCOME_______________");
-                            flag = true;
-                            adminMenu();
-                            break;
-                        }
+                        Console.WriteLine("_______________WELCOME_______________");
+                        flag = true;
+                        adminMenu();
+                        break;
                     }
-
-                    if (flag != true)
-                    { Console.WriteLine("Admin not found Or input invaild"); }
                 }
 
-                catch (Exception e)
-                {
-                    Console.WriteLine("Erorr" + e.Message);
+                if (flag != true)
+                { Console.WriteLine("Admin not found Or input invaild"); }
+            }
 
-                }
+            catch (Exception e)
+            {
+                Console.WriteLine("Erorr" + e.Message);
 
-            
+            }
+
+
 
 
         }
+        static void TotalBook()
+        {
+            TotalBooks = 0;
+            for (int i = 0; i < Books.Count; i++)
+            {
+                TotalBooks += Books[i].q;
+            }
+        }
+
+
+
     }
 }
     
