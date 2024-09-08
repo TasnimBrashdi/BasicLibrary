@@ -362,10 +362,10 @@ namespace BasicLibrary
                     {
                         Console.WriteLine("Book has been retrieved ");
                         int newq = Books[i].q + 1;
-                        Books[i] = (nameReturn, Books[i].BAuthor, Books[i].ID, newq);
+                        Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
                         TotalBooks++;
 
-                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[1].ID, Books[i].q),TotalBooks);
+                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks);
                        
                         flag = true;
                         break;
