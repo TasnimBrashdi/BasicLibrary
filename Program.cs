@@ -49,21 +49,9 @@ namespace BasicLibrary
 
                             break;
                         case "C":
-                            Console.WriteLine("Choose 1 for admin ,2 for user");
-                            int cho = int.Parse(Console.ReadLine());
-                            if (cho == 1)
-                            {
-                                RegisterAdmin();
-                            }
-                            else if (cho == 2)
-                            {
-                                RegisterUser();
-                            }
-                            else
-                            {
-                                Console.WriteLine("Please choose correct chois");
-                            }
-
+                           
+                            RegisterUser();
+                            
                             break;
                         default:
                             Console.WriteLine("Sorry your choice was wrong");
@@ -480,7 +468,7 @@ namespace BasicLibrary
             Brep.Append("User Name: ").Append(usernam);
             Brep.AppendLine();
 
-            Brep.Append("Number of Books: ").Append(Books.q);
+            Brep.Append("Number of Books available: ").Append(Books.q);
             Brep.AppendLine();
 
 
@@ -515,7 +503,7 @@ namespace BasicLibrary
             Bretun.Append("\n User Name: ").Append(usernam);
             Bretun.AppendLine();
 
-            Bretun.Append("Number of Books: ").Append(Books.q);
+            Bretun.Append("Number of Books available: ").Append(Books.q);
             Bretun.AppendLine();
 
 
@@ -534,31 +522,7 @@ namespace BasicLibrary
             }
 
         }
-        static void RegisterAdmin()
-        {
-
-            Console.WriteLine("Enter your Email");
-            string email = Console.ReadLine();
-
-            if (!IsValidEmail(email))
-            {
-                Console.WriteLine("Invalid email,Please enter a valid email address.");
-                return;
-            }
-
-            Console.WriteLine("Enter your Password");
-            string pas = Console.ReadLine();
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pas))
-            {
-                Console.WriteLine("Email and Password cannot be empty.");
-                return;
-            }
-            Admin.Add((email, pas, nextIdAdmin++));
-            Console.WriteLine("Admin Added Succefull\n");
-            SaveAdminToFile();
-
-
-        }
+      
         static bool IsValidEmail(string email)
         {
 
@@ -583,7 +547,7 @@ namespace BasicLibrary
                 Console.WriteLine("User name,Email and Password cannot be empty.");
                 return;
             }
-            User.Add((uname,email, pas, nextIdUser++));
+            User.Add((uname, email, pas, nextIdUser++));
             Console.WriteLine("User Added Succefull\n");
             SaveUserToFile();
         }
