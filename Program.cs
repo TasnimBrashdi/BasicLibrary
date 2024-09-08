@@ -39,11 +39,13 @@ namespace BasicLibrary
                 switch (choice)
                 {
                     case "A":
+                      
                         adminMenu();
                         break;
 
                     case "B":
-                        userMenu();
+                        LogUser();
+           
                         break;
                     case "C":
                         Console.WriteLine("Choose 1 for admin ,2 for user");
@@ -612,13 +614,48 @@ namespace BasicLibrary
                             }
                         }
                     }
-                    Console.WriteLine("User loaded from file successfully.");
+                    Console.WriteLine("Admin loaded from file successfully.");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading from file: {ex.Message}");
             }
+        }
+        static void LogUser() {
+            LoadUser();
+            Console.WriteLine("Ener your Email");
+            string email = Console.ReadLine();
+            Console.WriteLine("Ener your Password");
+            string pas = Console.ReadLine();
+            if (email != null && pas != null) {
+                bool flag = false;
+                try
+                {
+                    for (int i = 0; i < User.Count; i++)
+                    {
+                        if (User[i].Uemail == email && User[i].Upas==pas)
+                        {
+                            Console.WriteLine("WELCOME ");
+                            flag = true;
+                            userMenu();
+                            break;
+                        }
+                    }
+
+                    if (flag != true)
+                    { Console.WriteLine("User not found"); }
+                }
+
+                catch (Exception e)
+                {
+                    Console.WriteLine("Erorr" + e.Message);
+
+                }
+
+            }
+
+
         }
     }
     }
