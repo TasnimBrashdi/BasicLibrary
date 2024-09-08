@@ -11,12 +11,12 @@ namespace BasicLibrary
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static List<(string email, string pas, int ID)> Admin = new List<(string email, string pas, int ID)>();
-        static List<(string Uemail, string Upas, int UID)> User = new List<(string Uemail, string Upas, int UID)>();
+        static List<( string username,string Uemail, string Upas, int UID)> User = new List<(string username,string Uemail, string Upas, int UID)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
         static string fileuser = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
         static string fileadmin = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";
-
+        static string usernam;
         static string nameReturn;
         static string nameBorrow;
         static int nextIdUser = 1;
@@ -27,57 +27,61 @@ namespace BasicLibrary
             bool ExitFlag = false;
             LoadBooksFromFile();
 
-
-            do
+            try
             {
-                Console.WriteLine("Welcome to Lirary");
-                Console.WriteLine("\n Enter A for Admin ,B for User, C New Register:");
-
-
-                string choice = Console.ReadLine()?.ToUpper();
-
-                switch (choice)
+                do
                 {
-                    case "A":
-
-                        LogAdmin();
-                        break;
-
-                    case "B":
-                        LogUser();
-
-                        break;
-                    case "C":
-                        Console.WriteLine("Choose 1 for admin ,2 for user");
-                        int cho = int.Parse(Console.ReadLine());
-                        if (cho == 1)
-                        {
-                            RegisterAdmin();
-                        }
-                        else if (cho == 2)
-                        {
-                            RegisterUser();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please choose correct chois");
-                        }
-
-                        break;
-                    default:
-                        Console.WriteLine("Sorry your choice was wrong");
-                        break;
+                    Console.WriteLine("\n    ---- Welcome to Lirary ----  ");
+                    Console.WriteLine("\n Choose: \n A for Admin \n B for User \n C New Register ");
 
 
+                    string choice = Console.ReadLine()?.ToUpper();
 
-                }
+                    switch (choice)
+                    {
+                        case "A":
 
-                Console.WriteLine("press any key to continue");
-                string cont = Console.ReadLine();
+                            LogAdmin();
+                            break;
 
-                Console.Clear();
+                        case "B":
+                            LogUser();
 
-            } while (ExitFlag != true);
+                            break;
+                        case "C":
+                            Console.WriteLine("Choose 1 for admin ,2 for user");
+                            int cho = int.Parse(Console.ReadLine());
+                            if (cho == 1)
+                            {
+                                RegisterAdmin();
+                            }
+                            else if (cho == 2)
+                            {
+                                RegisterUser();
+                            }
+                            else
+                            {
+                                Console.WriteLine("Please choose correct chois");
+                            }
+
+                            break;
+                        default:
+                            Console.WriteLine("Sorry your choice was wrong");
+                            break;
+
+
+
+                    }
+
+                    Console.WriteLine("press any key to continue");
+                    string cont = Console.ReadLine();
+
+                    Console.Clear();
+
+                } while (ExitFlag != true);
+                } catch (Exception ex) {
+                Console.WriteLine("ERROR"+ex.Message);
+            }
         }
         static void adminMenu()
         {
@@ -325,23 +329,29 @@ namespace BasicLibrary
             Console.WriteLine("Enter Book Name you want to borrow");
             nameBorrow = Console.ReadLine();
             bool flag = false;
-
-            for (int i = 0; i < Books.Count; i++)
+            try
             {
-                if (Books[i].BName == nameBorrow)
+                for (int i = 0; i < Books.Count; i++)
                 {
-                    Console.WriteLine("Book is available for borrowing ");
-                    int newq = Books[i].q - 1;
-                    Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-                    Filereport(filereport, (Books[i].BName, Books[i].BAuthor, Books[1].ID, Books[i].q));
-                    flag = true;
-                    break;
+                    if (Books[i].BName == nameBorrow)
+                    {
+                        Console.WriteLine("Book is available for borrowing ");
+                        int newq = Books[i].q - 1;
+                        Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq));
+                        flag = true;
+                        break;
+                    }
                 }
+
+                if (flag != true)
+                { Console.WriteLine("book not found"); }
             }
-
-            if (flag != true)
-            { Console.WriteLine("book not found"); }
-
+            catch(Exception ex) { 
+                
+                Console.WriteLine("ERROR"+ex.Message);
+            
+            }
 
         }
         static void ReturnBook()
@@ -349,7 +359,7 @@ namespace BasicLibrary
             Console.WriteLine("Enter Book Name you want to return");
             nameReturn = Console.ReadLine();
             bool flag = false;
-
+            try { 
             for (int i = 0; i < Books.Count; i++)
             {
                 if (nameBorrow == nameReturn)
@@ -357,16 +367,21 @@ namespace BasicLibrary
                     Console.WriteLine("Book has been retrieved ");
                     int newq = Books[i].q + 1;
                     Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-                    returnbook(filereport, (Books[i].BName, Books[i].BAuthor, Books[1].ID, Books[i].q));
+                    returnbookfile(filereport,usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq));
                     flag = true;
                     break;
                 }
             }
             if (flag != true)
             { Console.WriteLine(" This book not availabe or that has not been  borrowed , mybe you Enter wrong name"); }
-
-
         }
+            catch(Exception ex) { 
+                
+                Console.WriteLine("ERROR"+ex.Message);
+            
+            }
+
+}
         static void EditBook()
         {
             ViewAllBooks();
@@ -446,21 +461,27 @@ namespace BasicLibrary
             if (flag != true)
             { Console.WriteLine("book not found\n"); }
         }
-        static void Filereport(string filereport, (string BName, string BAuthor, int ID, int q) Books)
+
+        static void Filereport(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books)
         {
 
 
             StringBuilder Brep = new StringBuilder();
-            Brep.Append("            Book's Borrow: ");
+            Brep.Append("\n_________Book's Borrow:________");
             Brep.AppendLine();
-            Brep.Append("-----------------------------------------\n");
+            Brep.Append("-----------------------------------------");
+            Brep.AppendLine();
             Brep.Append("Book's Name: ").Append(Books.BName);
             Brep.AppendLine();
             Brep.Append("Authoer's Name: ").Append(Books.BAuthor);
             Brep.AppendLine();
             Brep.Append("Book's Id: ").Append(Books.ID);
             Brep.AppendLine();
+            Brep.Append("User Name: ").Append(usernam);
+            Brep.AppendLine();
 
+            Brep.Append("Number of Books: ").Append(Books.q);
+            Brep.AppendLine();
 
 
             using (StreamWriter report = new StreamWriter(filereport, true))
@@ -478,17 +499,23 @@ namespace BasicLibrary
 
 
         }
-        static void returnbook(string filereport, (string BName, string BAuthor, int ID, int q) Books)
+        static void returnbookfile(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books)
         {
             StringBuilder Bretun = new StringBuilder();
-            Bretun.Append("           Book's Return: ");
+            Bretun.Append("\n_______Book's Return:________");
             Bretun.AppendLine();
-            Bretun.Append("-----------------------------------------\n");
+            Bretun.Append("-----------------------------------------");
+            Bretun.AppendLine();
             Bretun.Append("Book's Name: ").Append(Books.BName);
             Bretun.AppendLine();
-            Bretun.Append("Authoer's Name: ").Append(Books.BAuthor);
+            Bretun.Append("\nAuthoer's Name: ").Append(Books.BAuthor);
             Bretun.AppendLine();
-            Bretun.Append("Book's Id: ").Append(Books.ID);
+            Bretun.Append("\nBook's Id: ").Append(Books.ID);
+            Bretun.AppendLine();
+            Bretun.Append("\n User Name: ").Append(usernam);
+            Bretun.AppendLine();
+
+            Bretun.Append("Number of Books: ").Append(Books.q);
             Bretun.AppendLine();
 
 
@@ -502,7 +529,7 @@ namespace BasicLibrary
 
                 report.WriteLine(Bretun.ToString());
                 report.WriteLine("Date and Time:");
-                report.WriteLine("----------------");
+     
                 report.WriteLine(DateTime.Now);
             }
 
@@ -512,22 +539,51 @@ namespace BasicLibrary
 
             Console.WriteLine("Enter your Email");
             string email = Console.ReadLine();
+
+            if (!IsValidEmail(email))
+            {
+                Console.WriteLine("Invalid email,Please enter a valid email address.");
+                return;
+            }
+
             Console.WriteLine("Enter your Password");
             string pas = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pas))
+            {
+                Console.WriteLine("Email and Password cannot be empty.");
+                return;
+            }
             Admin.Add((email, pas, nextIdAdmin++));
             Console.WriteLine("Admin Added Succefull\n");
             SaveAdminToFile();
 
 
         }
-        static void RegisterUser()
+        static bool IsValidEmail(string email)
         {
 
+            return !string.IsNullOrWhiteSpace(email) && email.Contains("@") && email.EndsWith(".com");
+        }
+        static void RegisterUser()
+        {
+            Console.WriteLine("Enter User Name");
+            string uname = Console.ReadLine();
             Console.WriteLine("Enter your Email");
             string email = Console.ReadLine();
+            if (!IsValidEmail(email))
+            {
+                Console.WriteLine("Invalid email, Please enter a valid email address.");
+                return;
+            }
+
             Console.WriteLine("Enter your Password");
             string pas = Console.ReadLine();
-            User.Add((email, pas, nextIdUser++));
+            if (string.IsNullOrWhiteSpace(uname) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pas))
+            {
+                Console.WriteLine("User name,Email and Password cannot be empty.");
+                return;
+            }
+            User.Add((uname,email, pas, nextIdUser++));
             Console.WriteLine("User Added Succefull\n");
             SaveUserToFile();
         }
@@ -559,7 +615,7 @@ namespace BasicLibrary
                 {
                     foreach (var u in User)
                     {
-                        writer.WriteLine($"{u.Uemail}|{u.Upas}|{u.UID}");
+                        writer.WriteLine($"{u.username}|{u.Uemail}|{u.Upas}|{u.UID}");
                     }
                 }
                 Console.WriteLine("User saved to file successfully.");
@@ -582,9 +638,9 @@ namespace BasicLibrary
                         while ((line = reader.ReadLine()) != null)
                         {
                             var parts = line.Split('|');
-                            if (parts.Length == 3)
+                            if (parts.Length == 4)
                             {
-                                User.Add((parts[0], parts[1], int.Parse(parts[2])));
+                                User.Add((parts[0], parts[1], parts[2], int.Parse(parts[3])));
                             }
                         }
                     }
@@ -626,20 +682,23 @@ namespace BasicLibrary
         static void LogUser()
         {
             LoadUser();
-            Console.WriteLine("Enter your Email");
-            string email = Console.ReadLine();
+            Console.WriteLine("Enter User Name");
+            usernam = Console.ReadLine();
             Console.WriteLine("Enter your Password");
             string pas = Console.ReadLine();
-            if (email != null && pas != null)
+            if (string.IsNullOrWhiteSpace(usernam) || string.IsNullOrWhiteSpace(pas))
             {
-                bool flag = false;
+                Console.WriteLine("Email and Password cannot be empty.");
+                return;
+            }
+            bool flag = false;
                 try
                 {
                     for (int i = 0; i < User.Count; i++)
                     {
-                        if (User[i].Uemail == email && User[i].Upas == pas)
+                        if (User[i].username == usernam && User[i].Upas == pas)
                         {
-                            Console.WriteLine("    WELCOME   ");
+                            Console.WriteLine($"           WELCOME: {usernam} ");
                             flag = true;
                             userMenu();
                             break;
@@ -656,7 +715,7 @@ namespace BasicLibrary
 
                 }
 
-            }
+            
             
         }
         static void LogAdmin()
@@ -666,16 +725,19 @@ namespace BasicLibrary
             string email = Console.ReadLine();
             Console.WriteLine("Enter your Password");
             string pas = Console.ReadLine();
-            if (email != null && pas != null)
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pas))
             {
-                bool flag = false;
+                Console.WriteLine("Email and Password cannot be empty.");
+                return;
+            }
+            bool flag = false;
                 try
                 {
                     for (int i = 0; i < Admin.Count; i++)
                     {
                         if (Admin[i].email == email && Admin[i].pas == pas)
                         {
-                            Console.WriteLine("    WELCOME   ");
+                            Console.WriteLine("_______________WELCOME_______________");
                             flag = true;
                             adminMenu();
                             break;
@@ -692,7 +754,7 @@ namespace BasicLibrary
 
                 }
 
-            }
+            
 
 
         }
