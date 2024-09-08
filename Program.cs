@@ -19,6 +19,8 @@ namespace BasicLibrary
 
         static string nameReturn;
         static string nameBorrow;
+        static int nextIdUser = 1;
+        static int nextIdAdmin = 1;
         // test check out
         static void Main(string[] args)
         {// downloaded form ahmed device 
@@ -505,24 +507,26 @@ namespace BasicLibrary
         static void RegisterAdmin()
         {
 
-            int id = 0;
                 Console.WriteLine("Ener your Email");
                 string email = Console.ReadLine();
                 Console.WriteLine("Ener your Password");
                 string pas = Console.ReadLine();
-                Admin.Add((email, pas, id + 1));
+                Admin.Add((email, pas, nextIdAdmin++));
                Console.WriteLine("Admin Added Succefull\n");
-    
+               SaveAdminToFile();
+
+
         }
         static void RegisterUser()
         {
-            int id = 0;
+       
             Console.WriteLine("Ener your Email");
             string email = Console.ReadLine();
             Console.WriteLine("Ener your Password");
             string pas = Console.ReadLine();
-            User.Add((email, pas, id + 1));
+            User.Add((email, pas, nextIdUser++));
             Console.WriteLine("User Added Succefull\n");
+            SaveUserToFile();
         }
         static void SaveAdminToFile()
       
@@ -560,6 +564,60 @@ namespace BasicLibrary
             catch (Exception ex)
             {
                 Console.WriteLine($"Error saving to file: {ex.Message}");
+            }
+        }
+        static void LoadUser()
+        {
+
+            try
+            {
+                if (File.Exists(fileuser))
+                {
+                    using (StreamReader reader = new StreamReader(fileuser))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split('|');
+                            if (parts.Length == 3)
+                            {
+                                User.Add((parts[0], parts[1], int.Parse(parts[2])));
+                            }
+                        }
+                    }
+                    Console.WriteLine("User loaded from file successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading from file: {ex.Message}");
+            }
+        }
+        static void LoadAdmin()
+        {
+
+            try
+            {
+                if (File.Exists(fileadmin))
+                {
+                    using (StreamReader reader = new StreamReader(fileadmin))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split('|');
+                            if (parts.Length == 3)
+                            {
+                                Admin.Add((parts[0], parts[1], int.Parse(parts[2])));
+                            }
+                        }
+                    }
+                    Console.WriteLine("User loaded from file successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading from file: {ex.Message}");
             }
         }
     }
