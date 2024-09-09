@@ -22,7 +22,7 @@ namespace BasicLibrary
         static string usernam;
         static string nameReturn;
         static string nameBorrow;
-        //static int BorrowCount = 0;
+
         static int TotalBooks=0;
         static int nextIdUser = 1;
         static int nextIdAdmin = 1;
@@ -31,13 +31,14 @@ namespace BasicLibrary
         {// downloaded form ahmed device 
             bool ExitFlag = false;
             LoadBooksFromFile();
+            loadBorrow();
             TotalBook();
             try
             {
                 do
                 {
-                    Console.WriteLine("\n    ---- Welcome to Lirary ----  ");
-                    Console.WriteLine("\n Choose: \n A for Admin \n B for User \n C New Register ");
+                    Console.WriteLine("\n   - - - - Welcome to Library - - - -  ");
+                    Console.WriteLine("\n Choose: \n A for Admin \n B for User \n C New Register \n D Log out ");
 
 
                     string choice = Console.ReadLine()?.ToUpper();
@@ -57,6 +58,9 @@ namespace BasicLibrary
 
                             RegisterUser();
 
+                            break;
+                            case "D":
+                            ExitFlag = true;
                             break;
                         default:
                             Console.WriteLine("Sorry your choice was wrong");
@@ -336,8 +340,8 @@ namespace BasicLibrary
                     
                         BorrowCount.Add((Books[i].BName, i + 1));
 
-                        TotalBooks--;
-                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks);
+                       
+                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks-1);
 
                         SaveMostBorrowing();
                             string authorName = Books[i].BAuthor;
@@ -350,7 +354,7 @@ namespace BasicLibrary
                                     Console.WriteLine($"Book's Title: {book.BName}, ID: {book.ID}");
                                 }
                             }
-                        MostBookBorrowed();
+                        //MostBookBorrowed();
 
 
 
@@ -385,9 +389,9 @@ namespace BasicLibrary
                         Console.WriteLine("Book has been retrieved ");
                         int newq = Books[i].q + 1;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-                        TotalBooks++;
+            
                         BorrowCount.Add((nameReturn, i-1));
-                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks);
+                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks+1);
                        
                         flag = true;
                         break;
@@ -416,31 +420,28 @@ namespace BasicLibrary
             {
                 if (Books[i].ID == IdB)
                 {
-                    Console.Write(" 1.Book's Name\n 2.Author's Name\n 3.quntity\n ");
-                    int ChoiceEdit;
-                    while (!int.TryParse(Console.ReadLine(), out ChoiceEdit) || ChoiceEdit <= 0)
-                    {
-                        Console.Write("Invalid input.");
-                    }
+                    Console.Write(" A.Book's Name\n B.Author's Name\n C.quntity\n ");
+                    string ChoiceEdit = Console.ReadLine()?.ToUpper();
+
                     switch (ChoiceEdit)
                     {
-                        case 1:
+                        case "A":
                             Console.Write("Enter the new bOOK'S NAME: ");
                             string editname = Console.ReadLine();
                             Books[i] = (editname, Books[i].BAuthor, IdB, Books[i].q);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
 
                             break;
-                        case 2:
+                        case "B":
                             Console.Write("Enter the new AUTHOR'S NAME: ");
                             string editAuth = Console.ReadLine();
                             Books[i] = (Books[i].BName, editAuth, IdB, Books[i].q);
                             Console.Write(" AUTHOR'S NAME UPDATED\n ");
                             break;
-                        case 3:
-                            Console.Write("Enter the new bOOK'S Quntity: ");
+                        case "C":
+                            Console.Write("Add bOOK'S Quntity: ");
                             int newq = int.Parse(Console.ReadLine());
-                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, newq);
+                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].q+ newq);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
                             break;
                         default:
@@ -768,9 +769,11 @@ namespace BasicLibrary
         }
         static void MostBookBorrowed()
         {
+           
             List<int> bookIdcount = new List<int>();
             List<int> borrowCount = new List<int>();
-       
+            int most = -1;
+            int max = 0;
 
             foreach (var b in BorrowCount)
             {
@@ -789,8 +792,7 @@ namespace BasicLibrary
                 }
             }
         
-            int most= -1;
-            int max = 0;
+            
             for (int i = 0; i < borrowCount.Count; i++)
             {
                 if (borrowCount[i] > max)
@@ -803,10 +805,21 @@ namespace BasicLibrary
             foreach (var book in Books)
             {
                 if (book.ID == most)
+                {
                     BookName = book.BName;
-    
+                    break;
+                }
+         
             }
-            Console.WriteLine($"Most Borrowed Book ID :{most}");
+            if (BookName != null)
+            {
+                Console.WriteLine($"\nMost Borrowed Book ID: {most} {BookName}");
+            }
+            else
+            {
+                Console.WriteLine("No book found with the most borrowed ID.");
+            }
+
 
 
 
@@ -848,7 +861,7 @@ namespace BasicLibrary
                             }
                         }
                     }
-                    Console.WriteLine("Books loaded from file successfully.");
+    
                 }
             }
             catch (Exception ex)
