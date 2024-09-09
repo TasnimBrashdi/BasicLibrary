@@ -326,13 +326,24 @@ namespace BasicLibrary
                 for (int i = 0; i < Books.Count; i++)
                 {
                     if (Books[i].BName == nameBorrow)
-                    {
+                    {   
                         Console.WriteLine("Book is available for borrowing ");
                         int newq = Books[i].q - 1;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-                        TotalBooks--;
 
+                        TotalBooks--;
                         Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks);
+
+                        string authorName = Books[i].BAuthor;
+
+                        Console.WriteLine($"\nThis author {authorName} has other books :");
+                        foreach (var book in Books)
+                        {
+                            if (book.BAuthor == authorName)
+                            {
+                                Console.WriteLine($"Book's Title: {book.BName}, ID: {book.ID}");
+                            }
+                        }
                         flag = true;
                         break;
                     }
