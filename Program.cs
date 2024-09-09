@@ -12,14 +12,17 @@ namespace BasicLibrary
     {
         static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
         static List<(string email, string pas, int ID)> Admin = new List<(string email, string pas, int ID)>();
+        static List<(string nameb,int c)> BorrowCount = new List<(string nameb, int c)>();
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
         static string fileuser = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
         static string fileadmin = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";
+        static string fileborrow = "C:\\Users\\Codeline User\\Documents\\filelib\\borrow.txt";
         static string usernam;
         static string nameReturn;
         static string nameBorrow;
+        //static int BorrowCount = 0;
         static int TotalBooks=0;
         static int nextIdUser = 1;
         static int nextIdAdmin = 1;
@@ -330,20 +333,28 @@ namespace BasicLibrary
                         Console.WriteLine("Book is available for borrowing ");
                         int newq = Books[i].q - 1;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                    
+                        BorrowCount.Add((Books[i].BName, i + 1));
 
                         TotalBooks--;
                         Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks);
 
-                        string authorName = Books[i].BAuthor;
+                        SaveMostBorrowing();
+                            string authorName = Books[i].BAuthor;
 
-                        Console.WriteLine($"\nThis author {authorName} has other books :");
-                        foreach (var book in Books)
-                        {
-                            if (book.BAuthor == authorName)
+                            Console.WriteLine($"\nThis author {authorName} has other books:");
+                            foreach (var book in Books)
                             {
-                                Console.WriteLine($"Book's Title: {book.BName}, ID: {book.ID}");
+                                if (book.BAuthor == authorName)
+                                {
+                                    Console.WriteLine($"Book's Title: {book.BName}, ID: {book.ID}");
+                                }
                             }
-                        }
+                        MostBookBorrowed();
+
+
+
+
                         flag = true;
                         break;
                     }
@@ -375,7 +386,7 @@ namespace BasicLibrary
                         int newq = Books[i].q + 1;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
                         TotalBooks++;
-
+                        BorrowCount.Add((nameReturn, i-1));
                         returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks);
                        
                         flag = true;
@@ -753,6 +764,96 @@ namespace BasicLibrary
             for (int i = 0; i < Books.Count; i++)
             {
                 TotalBooks += Books[i].q;
+            }
+        }
+        static void MostBookBorrowed()
+        {
+            List<int> bookIdcount = new List<int>();
+            List<int> borrowCount = new List<int>();
+       
+
+            foreach (var b in BorrowCount)
+            {
+                int bookId = b.c;
+                int index = bookIdcount.IndexOf(bookId);
+                if (index == -1)
+                {
+
+                    bookIdcount.Add(bookId);
+                    borrowCount.Add(1);
+                }
+                else
+                    {
+
+                        borrowCount[index]++;
+                }
+            }
+        
+            int most= -1;
+            int max = 0;
+            for (int i = 0; i < borrowCount.Count; i++)
+            {
+                if (borrowCount[i] > max)
+                {
+                    most = bookIdcount[i];
+                    max = borrowCount[i];
+                }
+            }
+            string BookName=null;
+            foreach (var book in Books)
+            {
+                if (book.ID == most)
+                    BookName = book.BName;
+    
+            }
+            Console.WriteLine($"Most Borrowed Book ID :{most}");
+
+
+
+
+        }
+        static void SaveMostBorrowing()
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(fileborrow))
+                {
+                    foreach (var book in BorrowCount)
+                    {
+                        writer.WriteLine($"{book.nameb}|{book.c}");
+                    }
+                }
+                Console.WriteLine("Books borrowed saved to file successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving to file: {ex.Message}");
+            }
+        }
+        static void loadBorrow()
+        {
+            try
+            {
+                if (File.Exists(fileborrow))
+                {
+                    using (StreamReader reader = new StreamReader(fileborrow))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split('|');
+                            if (parts.Length == 2)
+                            {
+                                BorrowCount.Add((parts[0],int.Parse(parts[1])));
+                            }
+                        }
+                    }
+                    Console.WriteLine("Books loaded from file successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading from file: {ex.Message}");
             }
         }
 
