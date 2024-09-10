@@ -10,8 +10,9 @@ namespace BasicLibrary
 {
     internal class Program
     {
-        static List<(string BName, string BAuthor, int ID, int q)> Books = new List<(string BName, string BAuthor, int ID, int q)>();
+        static List<(string BName, string BAuthor, int ID, int copies)> Books = new List<(string BName, string BAuthor, int ID, int copies)>();
         static List<(string email, string pas, int ID)> Admin = new List<(string email, string pas, int ID)>();
+        static List<(int Idbook, int Iduser)> BorrowList = new List<(int Idbook, int Iduser)>();
         static List<(string nameb,int c)> BorrowCount = new List<(string nameb, int c)>();
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
         static string filePath = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
@@ -138,7 +139,7 @@ namespace BasicLibrary
                 Console.Clear();
             } while (ExitFlag != true);
         }
-        static void userMenu()
+        static void userMenu(int UID)
         {
 
 
@@ -164,7 +165,7 @@ namespace BasicLibrary
                     case "B":
                         Console.WriteLine("\n List of book available");
                         ViewAllBooks();
-                        BorrowBook();
+                        BorrowBook(UID);
                         break;
 
                     case "C":
@@ -201,22 +202,22 @@ namespace BasicLibrary
             }
             for (int i = 0; i < Nbooks; i++)
             {
-
-                Console.WriteLine($"Enter Book {i + 1}| Name: ");
+               int  BookId = i + 4;
+                Console.WriteLine($"Enter Book {BookId}| Name: ");
                 string name = Console.ReadLine();
 
-                Console.WriteLine($"Enter Book {i + 1}| Author: ");
+                Console.WriteLine($"Enter Book {BookId}| Author: ");
                 string author = Console.ReadLine();
 
 
-                Console.WriteLine($"Enter Book {i + 1}| quntity:");
+                Console.WriteLine($"Enter Book {BookId}| copies:");
                 int q;
                 while (!int.TryParse(Console.ReadLine(), out q) || q <= 0)
                 {
-                    Console.Write("Quntity must be number and greater than zero .");
+                    Console.Write("copies must be number and greater than zero .");
                 }
 
-                Books.Add((name, author, i + 1, q));
+                Books.Add((name, author, BookId, q));
                 Console.WriteLine("Book Added Succefull\n");
             }
             SaveBooksToFile();
@@ -239,7 +240,7 @@ namespace BasicLibrary
                 sb.AppendLine();
                 sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].ID);
                 sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Quntity : ").Append(Books[i].q);
+                sb.Append("Book ").Append(BookNumber).Append("| Quntity : ").Append(Books[i].copies);
                 sb.AppendLine().AppendLine();
                 Console.WriteLine(sb.ToString());
                 sb.Clear();
@@ -311,7 +312,7 @@ namespace BasicLibrary
                 {
                     foreach (var book in Books)
                     {
-                        writer.WriteLine($"{book.BName}|{book.BAuthor}|{book.ID}|{book.q}");
+                        writer.WriteLine($"{book.BName}|{book.BAuthor}|{book.ID}|{book.copies}");
                     }
                 }
                 Console.WriteLine("Books saved to file successfully.");
@@ -322,7 +323,7 @@ namespace BasicLibrary
             }
         }
 
-        static void BorrowBook()
+        static void BorrowBook(int UID)
         {
 
             Console.WriteLine("Enter Book Name you want to borrow");
@@ -335,15 +336,17 @@ namespace BasicLibrary
                     if (Books[i].BName == nameBorrow)
                     {   
                         Console.WriteLine("Book is available for borrowing ");
-                        int newq = Books[i].q - 1;
+                        int newq = Books[i].copies - 1;
+                        TotalBooks--;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
                     
                         BorrowCount.Add((Books[i].BName, i + 1));
 
-                       
-                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks-1);
+                     
+                        BorrowList.Add((Books[i].ID, UID));
+                        Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].ID, newq),TotalBooks);
 
-                        SaveMostBorrowing();
+                      
                             string authorName = Books[i].BAuthor;
 
                             Console.WriteLine($"\nThis author {authorName} has other books:");
@@ -354,12 +357,12 @@ namespace BasicLibrary
                                     Console.WriteLine($"Book's Title: {book.BName}, ID: {book.ID}");
                                 }
                             }
-                        //MostBookBorrowed();
+                     
+                        SaveMostBorrowing();
+                        MostBorrowedBookAndBestAuthor();
 
 
-
-
-                        flag = true;
+                         flag = true;
                         break;
                     }
                 }
@@ -387,11 +390,11 @@ namespace BasicLibrary
                     if (nameBorrow == nameReturn)
                     {
                         Console.WriteLine("Book has been retrieved ");
-                        int newq = Books[i].q + 1;
+                        int newq = Books[i].copies + 1;
                         Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
-            
-                        BorrowCount.Add((nameReturn, i-1));
-                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks+1);
+                        TotalBooks++;
+                  
+                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks);
                        
                         flag = true;
                         break;
@@ -428,20 +431,20 @@ namespace BasicLibrary
                         case "A":
                             Console.Write("Enter the new bOOK'S NAME: ");
                             string editname = Console.ReadLine();
-                            Books[i] = (editname, Books[i].BAuthor, IdB, Books[i].q);
+                            Books[i] = (editname, Books[i].BAuthor, IdB, Books[i].copies);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
 
                             break;
                         case "B":
                             Console.Write("Enter the new AUTHOR'S NAME: ");
                             string editAuth = Console.ReadLine();
-                            Books[i] = (Books[i].BName, editAuth, IdB, Books[i].q);
+                            Books[i] = (Books[i].BName, editAuth, IdB, Books[i].copies);
                             Console.Write(" AUTHOR'S NAME UPDATED\n ");
                             break;
                         case "C":
-                            Console.Write("Add bOOK'S Quntity: ");
+                            Console.Write("Add bOOK'S copies: ");
                             int newq = int.Parse(Console.ReadLine());
-                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].q+ newq);
+                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].copies + newq);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
                             break;
                         default:
@@ -486,7 +489,7 @@ namespace BasicLibrary
             { Console.WriteLine("book not found\n"); }
         }
 
-        static void Filereport(string filereport, string usernam, (string BName, string BAuthor, int ID, int q) Books,int totalbooks)
+        static void Filereport(string filereport, string usernam, (string BName, string BAuthor, int ID, int copies) Books,int totalbooks)
         {
 
 
@@ -504,7 +507,7 @@ namespace BasicLibrary
             Brep.Append("User Name: ").Append(usernam);
             Brep.AppendLine();
 
-            Brep.Append("Number of Books available: ").Append(Books.q);
+            Brep.Append("Number of Books available: ").Append(Books.copies);
             Brep.AppendLine();
 
             Brep.Append("Total Books: ").Append(totalbooks);
@@ -701,7 +704,7 @@ namespace BasicLibrary
                     {
                         Console.WriteLine($"           WELCOME: {usernam} ");
                         flag = true;
-                        userMenu();
+                        userMenu(User[i].UID);
                         break;
                     }
                 }
@@ -764,66 +767,92 @@ namespace BasicLibrary
             TotalBooks = 0;
             for (int i = 0; i < Books.Count; i++)
             {
-                TotalBooks += Books[i].q;
+                TotalBooks += Books[i].copies;
             }
         }
-        static void MostBookBorrowed()
+        static void MostBorrowedBookAndBestAuthor()
         {
-           
-            List<int> bookIdcount = new List<int>();
-            List<int> borrowCount = new List<int>();
-            int most = -1;
-            int max = 0;
-
-            foreach (var b in BorrowCount)
-            {
-                int bookId = b.c;
-                int index = bookIdcount.IndexOf(bookId);
-                if (index == -1)
-                {
-
-                    bookIdcount.Add(bookId);
-                    borrowCount.Add(1);
-                }
+            // Count the number of times each book is borrowed
+            var borrowCounts = new Dictionary<int, int>();
+            foreach (var borrow in BorrowList)
+            {  
+                if (borrowCounts.ContainsKey(borrow.Idbook))
+                    borrowCounts[borrow.Idbook]++;
                 else
-                    {
+                    borrowCounts[borrow.Idbook] = 1;
+            }
 
-                        borrowCount[index]++;
-                }
-            }
-        
-            
-            for (int i = 0; i < borrowCount.Count; i++)
+            // Find the most borrowed book
+            int mostBorrowedBookId = -1;
+            int maxBorrowCount = 0;
+            foreach (var kvp in borrowCounts)
             {
-                if (borrowCount[i] > max)
+                if (kvp.Value > maxBorrowCount)
                 {
-                    most = bookIdcount[i];
-                    max = borrowCount[i];
+                    mostBorrowedBookId = kvp.Key;
+                    maxBorrowCount = kvp.Value;
                 }
             }
-            string BookName=null;
-            foreach (var book in Books)
+
+            //Find the author of the most borrowed book
+            string bestAuthor = null;
+            if (mostBorrowedBookId != -1)
             {
-                if (book.ID == most)
+                var book = Books.FirstOrDefault(b => b.ID == mostBorrowedBookId);
+                if (book != default)
                 {
-                    BookName = book.BName;
-                    break;
+                    bestAuthor = book.BAuthor;
                 }
-         
             }
-            if (BookName != null)
+
+            //Track the number of times each author is associated with the most borrowed book
+            var authorBorrowCounts = new Dictionary<string, int>();
+            foreach (var borrow in BorrowList)
             {
-                Console.WriteLine($"\nMost Borrowed Book ID: {most} {BookName}");
+                var book = Books.FirstOrDefault(b => b.ID == borrow.Idbook);
+                if (book != default)
+                {
+                    if (authorBorrowCounts.ContainsKey(book.BAuthor))
+                        authorBorrowCounts[book.BAuthor]++;
+                    else
+                        authorBorrowCounts[book.BAuthor] = 1;
+                }
+            }
+
+            // Find the best author based on the borrow counts
+            string bestAuthorOverall = null;
+            int maxAuthorBorrowCount = 0;
+            foreach (var kvp in authorBorrowCounts)
+            {
+                if (kvp.Value > maxAuthorBorrowCount)
+                {
+                    bestAuthorOverall = kvp.Key;
+                    maxAuthorBorrowCount = kvp.Value;
+                }
+            }
+
+            //  results
+            if (mostBorrowedBookId != -1)
+            {
+                var mostBorrowedBook = Books.FirstOrDefault(b => b.ID == mostBorrowedBookId);
+                if (mostBorrowedBook != default)
+                {
+                    Console.WriteLine($"\nMost Borrowed Book ID: {mostBorrowedBookId}, Name: {mostBorrowedBook.BName}");
+                }
             }
             else
             {
-                Console.WriteLine("No book found with the most borrowed ID.");
+                Console.WriteLine("No books have been borrowed.");
             }
 
-
-
-
-
+            if (bestAuthorOverall != null)
+            {
+                Console.WriteLine($"Best Author: {bestAuthorOverall}");
+            }
+            else
+            {
+                Console.WriteLine("No author data available.");
+            }
         }
         static void SaveMostBorrowing()
         {
@@ -831,9 +860,9 @@ namespace BasicLibrary
             {
                 using (StreamWriter writer = new StreamWriter(fileborrow))
                 {
-                    foreach (var book in BorrowCount)
+                    foreach (var book in BorrowList)
                     {
-                        writer.WriteLine($"{book.nameb}|{book.c}");
+                        writer.WriteLine($"{book.Idbook}|{book.Iduser}");
                     }
                 }
                 Console.WriteLine("Books borrowed saved to file successfully.");
