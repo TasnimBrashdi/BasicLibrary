@@ -15,7 +15,7 @@ namespace BasicLibrary
         static List<(int BID, string BName, string BAuthor, int copies, int CopiesBorrow,float price,string categories,int BorrowPeriod)> Books = new List<(int BID, string BName, string BAuthor,int copies, int CopiesBorrow,float price, string categories,int BorrowPeriod)>();
         static List<(int AID,string Aname,string email, string pas)> Admin = new List<(int AID,string Aname,string email, string pas)>();
         static List<(int Idbook, int Iduser,DateTime BorrowDate,DateTime ReturnDate, DateTime ActualReturnDate,int Rating,bool ISReturned)> BorrowList = new List<(int Idbook, int Iduser, DateTime BorrowDate, DateTime ReturnDate, DateTime ActualReturnDate, int Rating, bool ISReturned)>();
-        static List<(string nameb,int c)> BorrowCount = new List<(string nameb, int c)>();
+
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
         static List<(int CID,string CName, int NOFBooks)> Categories = new List<(int CID,string CName, int NOFBooks)>();
         static string BooksFile = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
@@ -168,7 +168,7 @@ namespace BasicLibrary
 
                     case "B":
                         Console.WriteLine("\n List of book available");
-                        ViewAllBooks();
+                        ViewAllBooksuser();
                         BorrowBook(UID);
                         break;
 
@@ -242,6 +242,31 @@ namespace BasicLibrary
         }
 
 
+        static void ViewAllBooksuser()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int BookNumber = 0;
+
+            for (int i = 0; i < Books.Count; i++)
+            {
+                BookNumber = i + 1;
+                sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].BID);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| name : ").Append(Books[i].BName);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Author : ").Append(Books[i].BAuthor);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Price : ").Append(Books[i].price);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Categary : ").Append(Books[i].categories);
+                sb.AppendLine();
+                sb.AppendLine().AppendLine();
+                Console.WriteLine(sb.ToString());
+                sb.Clear();
+
+            }
+        }
         static void ViewAllBooks()
         {
             StringBuilder sb = new StringBuilder();
@@ -251,13 +276,22 @@ namespace BasicLibrary
             for (int i = 0; i < Books.Count; i++)
             {
                 BookNumber = i + 1;
+                sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].BID);
+                sb.AppendLine();
                 sb.Append("Book ").Append(BookNumber).Append("| name : ").Append(Books[i].BName);
                 sb.AppendLine();
                 sb.Append("Book ").Append(BookNumber).Append("| Author : ").Append(Books[i].BAuthor);
                 sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].BID);
-                sb.AppendLine();
                 sb.Append("Book ").Append(BookNumber).Append("| Copies : ").Append(Books[i].copies);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Copies Borrow : ").Append(Books[i].CopiesBorrow);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Price : ").Append(Books[i].price);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Categary : ").Append(Books[i].categories);
+                sb.AppendLine();
+                sb.Append("Book ").Append(BookNumber).Append("| Borrow Period : ").Append(Books[i].BorrowPeriod);
+   
                 sb.AppendLine().AppendLine();
                 Console.WriteLine(sb.ToString());
                 sb.Clear();
@@ -369,7 +403,7 @@ namespace BasicLibrary
                         TotalBooks--;
                         Books[i] = (Books[i].BID, Books[i].BName, Books[i].BAuthor, newq, Books[i].CopiesBorrow+1, Books[i].price, Books[i].categories, Books[i].BorrowPeriod);
                     
-                        BorrowCount.Add((Books[i].BName, i + 1));
+                   
 
                      
                         BorrowList.Add((Books[i].BID, UID,DateTime.Now, parsedDate, BorrowList[i].ActualReturnDate, BorrowList[i].Rating,false));
@@ -937,9 +971,9 @@ namespace BasicLibrary
                         while ((line = reader.ReadLine()) != null)
                         {
                             var parts = line.Split('|');
-                            if (parts.Length == 2)
+                            if (parts.Length == 7)
                             {
-                                BorrowCount.Add((parts[0],int.Parse(parts[1])));
+                                BorrowList.Add((int.Parse(parts[0]),int.Parse(parts[1]), DateTime.Parse(parts[2]), DateTime.Parse(parts[3]), DateTime.Parse(parts[4]), int.Parse(parts[5]), bool.Parse(parts[6])));
                             }
                         }
                     }
