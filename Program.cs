@@ -10,8 +10,8 @@ namespace BasicLibrary
 {
     internal class Program
     {
-        static List<(string BName, string BAuthor, int ID, int copies)> Books = new List<(string BName, string BAuthor, int ID, int copies)>();
-        static List<(string email, string pas, int ID)> Admin = new List<(string email, string pas, int ID)>();
+        static List<(string BName, string BAuthor, int ID, int copies, int CopiesBorrow,float price,string categories)> Books = new List<(string BName, string BAuthor, int ID, int copies, int CopiesBorrow,float price, string categories)>();
+        static List<(int AID,string Aname,string email, string pas)> Admin = new List<(int AID,string Aname,string email, string pas)>();
         static List<(int Idbook, int Iduser)> BorrowList = new List<(int Idbook, int Iduser)>();
         static List<(string nameb,int c)> BorrowCount = new List<(string nameb, int c)>();
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
@@ -202,7 +202,7 @@ namespace BasicLibrary
             }
             for (int i = 0; i < Nbooks; i++)
             {
-               int  BookId = i + 4;
+               int  BookId = i + 1;
                 Console.WriteLine($"Enter Book {BookId}| Name: ");
                 string name = Console.ReadLine();
 
@@ -216,8 +216,16 @@ namespace BasicLibrary
                 {
                     Console.Write("copies must be number and greater than zero .");
                 }
+                Console.WriteLine($"Enter Book {BookId}| price:");
+                float price;
+                while (!float.TryParse(Console.ReadLine(), out price) || price <= 0)
+                {
+                    Console.Write("copies greater than zero .");
+                }
+                Console.WriteLine($"Enter Book {BookId}| Categery: ");
+                string cate = Console.ReadLine();
 
-                Books.Add((name, author, BookId, q));
+                Books.Add((name, author, BookId, q,0,price,cate));
                 Console.WriteLine("Book Added Succefull\n");
             }
             SaveBooksToFile();
@@ -289,9 +297,9 @@ namespace BasicLibrary
                         while ((line = reader.ReadLine()) != null)
                         {
                             var parts = line.Split('|');
-                            if (parts.Length == 4)
+                            if (parts.Length == 7)
                             {
-                                Books.Add((parts[0], parts[1], int.Parse(parts[2]), int.Parse(parts[3])));
+                                Books.Add((parts[0], parts[1], int.Parse(parts[2]), int.Parse(parts[3]), int.Parse(parts[4]), float.Parse(parts[5]), parts[6]));
                             }
                         }
                     }
@@ -338,7 +346,7 @@ namespace BasicLibrary
                         Console.WriteLine("Book is available for borrowing ");
                         int newq = Books[i].copies - 1;
                         TotalBooks--;
-                        Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                        Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq, Books[i].CopiesBorrow, Books[i].price, Books[i].categories);
                     
                         BorrowCount.Add((Books[i].BName, i + 1));
 
@@ -391,7 +399,7 @@ namespace BasicLibrary
                     {
                         Console.WriteLine("Book has been retrieved ");
                         int newq = Books[i].copies + 1;
-                        Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq);
+                        Books[i] = (Books[i].BName, Books[i].BAuthor, Books[i].ID, newq, Books[i].CopiesBorrow, Books[i].price, Books[i].categories);
                         TotalBooks++;
                   
                         returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].ID, newq),TotalBooks);
@@ -423,7 +431,7 @@ namespace BasicLibrary
             {
                 if (Books[i].ID == IdB)
                 {
-                    Console.Write(" A.Book's Name\n B.Author's Name\n C.quntity\n ");
+                    Console.Write(" A.Book's Name\n B.Author's Name\n C.copies\n D.Pirce \n E.Categories\n ");
                     string ChoiceEdit = Console.ReadLine()?.ToUpper();
 
                     switch (ChoiceEdit)
@@ -431,21 +439,36 @@ namespace BasicLibrary
                         case "A":
                             Console.Write("Enter the new bOOK'S NAME: ");
                             string editname = Console.ReadLine();
-                            Books[i] = (editname, Books[i].BAuthor, IdB, Books[i].copies);
+                            Books[i] = (editname, Books[i].BAuthor, IdB, Books[i].copies, Books[i].CopiesBorrow, Books[i].price, Books[i].categories);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
 
                             break;
                         case "B":
                             Console.Write("Enter the new AUTHOR'S NAME: ");
                             string editAuth = Console.ReadLine();
-                            Books[i] = (Books[i].BName, editAuth, IdB, Books[i].copies);
+                            Books[i] = (Books[i].BName, editAuth, IdB, Books[i].copies, Books[i].CopiesBorrow, Books[i].price, Books[i].categories);
                             Console.Write(" AUTHOR'S NAME UPDATED\n ");
                             break;
                         case "C":
                             Console.Write("Add bOOK'S copies: ");
                             int newq = int.Parse(Console.ReadLine());
-                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].copies + newq);
+                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].copies + newq, Books[i].CopiesBorrow, Books[i].price, Books[i].categories);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
+                            break;
+                            case "D":
+                            Console.WriteLine("Enter new price of book");
+                            string newcate = Console.ReadLine();
+                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].copies, Books[i].CopiesBorrow, Books[i].price, newcate);
+                            break;
+                            case "E":
+                            Console.WriteLine("Enter new category of book");
+                            float newprice;
+                      
+                            while (!float.TryParse(Console.ReadLine(), out newprice) || newprice <= 0)
+                            {
+                                Console.Write("price must greater than zero .");
+                            }
+                            Books[i] = (Books[i].BName, Books[i].BAuthor, IdB, Books[i].copies, Books[i].CopiesBorrow, newprice, Books[i].categories);
                             break;
                         default:
                             Console.WriteLine("Invalid input");
@@ -591,25 +614,7 @@ namespace BasicLibrary
             Console.WriteLine("User Added Succefull\n");
             SaveUserToFile();
         }
-        static void SaveAdminToFile()
-
-        {
-            try
-            {
-                using (StreamWriter writer = new StreamWriter(fileadmin))
-                {
-                    foreach (var a in Admin)
-                    {
-                        writer.WriteLine($"{a.email}|{a.pas}|{a.ID}");
-                    }
-                }
-                Console.WriteLine("Admin saved to file successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving to file: {ex.Message}");
-            }
-        }
+      
         static void SaveUserToFile()
 
         {
@@ -669,9 +674,9 @@ namespace BasicLibrary
                         while ((line = reader.ReadLine()) != null)
                         {
                             var parts = line.Split('|');
-                            if (parts.Length == 3)
+                            if (parts.Length ==4)
                             {
-                                Admin.Add((parts[0], parts[1], int.Parse(parts[2])));
+                                Admin.Add((int.Parse(parts[0]),parts[1], parts[2], parts[3]));
                             }
                         }
                     }
