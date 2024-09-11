@@ -22,11 +22,9 @@ namespace BasicLibrary
         static string BooksFile = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
         static string UsersFile = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
-        static string AdminsFile = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";/// <summary>
-        /// 
-        /// </summary>
+        static string AdminsFile = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";
         static string BorrowingFile = "C:\\Users\\Codeline User\\Documents\\filelib\\borrow.txt";
-        static string CategoriesFile = "C:\\Users\\Codeline User\\Documents\\filelib\\Categories.txt";
+        static string CategoriesFile = "C:\\Users\\Codeline User\\Documents\\filelib\\CategoriesFile.txt";
         static string usernam;
         static string nameReturn;
         static string nameBorrow;
@@ -244,7 +242,8 @@ namespace BasicLibrary
                 }
                 int CopiesBorrow = 0;
                 Books.Add((BookId, name, author,  q, CopiesBorrow, price, cate, Borrowper));
-                //Categories.Add((Idcate, cate, Categories[i].NOFBooks));
+                int NOFBooks = i+1;
+                Categories.Add((Idcate, cate, NOFBooks));
                 Console.WriteLine("Book Added Succefull\n");
             }
             SaveBooksToFile();
@@ -405,15 +404,10 @@ namespace BasicLibrary
                         int newq = Books[i].copies - 1;
                         TotalBooks--;
                         Books[i] = (Books[i].BID, Books[i].BName, Books[i].BAuthor, newq, Books[i].CopiesBorrow+1, Books[i].price, Books[i].categories, Books[i].BorrowPeriod);
-
-
-
-              
-
                         DateTime BorrowDate =DateTime.Today;
                         DateTime returnDate = BorrowDate.AddDays(Books[i].BorrowPeriod);
-                        DateTime? nullableDate = null;
-                        BorrowList.Add((Books[i].BID, UID,BorrowDate, returnDate, nullableDate, null,false));
+                  
+                        BorrowList.Add((Books[i].BID, UID,BorrowDate, returnDate, null, null,false));
                         Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].BID, newq),TotalBooks);
 
                       
@@ -1023,6 +1017,10 @@ namespace BasicLibrary
             {
                 Console.WriteLine($"Error loading from file: {ex.Message}");
             }
+        }
+        static void ViewProfile(int uid,string username,string ema,string borrowbook)
+        {
+            
         }
 
 
