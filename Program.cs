@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
@@ -405,11 +406,12 @@ namespace BasicLibrary
 
 
 
-          
-                        DateTime BorrowDate=DateTime.Now;
+              
+
+                        DateTime BorrowDate =DateTime.Today;
                         DateTime returnDate = BorrowDate.AddDays(Books[i].BorrowPeriod);
                         DateTime? nullableDate = null;
-                        BorrowList.Add((Books[i].BID, UID,DateTime.Now, BorrowDate, nullableDate, null,false));//
+                        BorrowList.Add((Books[i].BID, UID,BorrowDate, returnDate, nullableDate, null,false));
                         Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].BID, newq),TotalBooks);
 
                       
@@ -439,7 +441,7 @@ namespace BasicLibrary
             catch (Exception ex)
             {
 
-                Console.WriteLine("ERROR" + ex.Message);
+                Console.WriteLine("ERROR " + ex.Message);
 
             }
 
@@ -978,7 +980,9 @@ namespace BasicLibrary
                 {
                     foreach (var book in BorrowList)
                     {
-                        writer.WriteLine($"{book.Idbook}|{book.Iduser}|{book.BorrowDate}|{book.ReturnDate}|{book.ActualReturnDate}|{book.Rating}|{book.ISReturned}");
+                        string actualReturnDate = book.ActualReturnDate.HasValue ? book.ActualReturnDate.Value.ToString() : "N/A";
+                        string rating = book.Rating.HasValue ? book.Rating.Value.ToString() : "N/A";
+                        writer.WriteLine($"{book.Idbook}|{book.Iduser}|{book.BorrowDate}|{book.ReturnDate}|{actualReturnDate}|{rating}|{book.ISReturned}");
                     }
                 }
                 Console.WriteLine("Books borrowed saved to file successfully.");
