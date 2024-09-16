@@ -15,7 +15,7 @@ namespace BasicLibrary
     {
         static List<(int BID, string BName, string BAuthor, int copies, int CopiesBorrow,float price,string categories,int BorrowPeriod)> Books = new List<(int BID, string BName, string BAuthor,int copies, int CopiesBorrow,float price, string categories,int BorrowPeriod)>();
         static List<(int AID,string Aname,string email, string pas)> Admin = new List<(int AID,string Aname,string email, string pas)>();
-        static List<(int Idbook, int Iduser,DateTime BorrowDate,DateTime ReturnDate, DateTime? ActualReturnDate,int? Rating,bool ISReturned)> BorrowList = new List<(int Idbook, int Iduser, DateTime BorrowDate, DateTime ReturnDate, DateTime? ActualReturnDate, int? Rating, bool ISReturned)>();
+        static List<(int Iduser , int Idbook, DateTime BorrowDate,DateTime ReturnDate, DateTime? ActualReturnDate,int? Rating,bool ISReturned)> BorrowList = new List<(int Iduser, int Idbook, DateTime BorrowDate, DateTime ReturnDate, DateTime? ActualReturnDate, int? Rating, bool ISReturned)>();
 
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
         static List<(int CID,string CName, int NOFBooks)> Categories = new List<(int CID,string CName, int NOFBooks)>();
@@ -26,8 +26,8 @@ namespace BasicLibrary
         static string BorrowingFile = "C:\\Users\\Codeline User\\Documents\\filelib\\borrow.txt";
         static string CategoriesFile = "C:\\Users\\Codeline User\\Documents\\filelib\\CategoriesFile.txt";
         static string usernam;
-        static string nameReturn;
-        static string nameBorrow;
+        static int IDReturn;
+        static int IDBorrow;
 
         static int TotalBooks=0;
         static int nextIdUser = 1;
@@ -288,57 +288,66 @@ namespace BasicLibrary
         {
             StringBuilder sb = new StringBuilder();
 
-            int BookNumber = 0;
+            int idWidth = 10;
+            int nameWidth = 30;
+            int authorWidth = 30;
+            int priceWidth = 10;
+            int categoryWidth = 20;
+            sb.AppendFormat("{0,-10} {1,-30} {2,-30} {3,-10} {4,-20}",
+                   "ID", "Name", "Author", "Price", "Category");
+            sb.AppendLine();
+            sb.AppendLine(new string('-', 120)); // Separator line
 
             for (int i = 0; i < Books.Count; i++)
             {
-                BookNumber = i + 1;
-                sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].BID);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| name : ").Append(Books[i].BName);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Author : ").Append(Books[i].BAuthor);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Price : ").Append(Books[i].price);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Categary : ").Append(Books[i].categories);
-                sb.AppendLine();
-                sb.AppendLine().AppendLine();
-                Console.WriteLine(sb.ToString());
-                sb.Clear();
+                var book = Books[i];
 
+                sb.AppendFormat("{0,-10} {1,-30} {2,-30} {3,-10} {4,-20}",
+                    book.BID.ToString().PadRight(idWidth),
+                    book.BName.PadRight(nameWidth),
+                    book.BAuthor.PadRight(authorWidth),
+                   $"OMR {book.price:0.00}".PadRight(priceWidth), // Format as currency
+                    book.categories.PadRight(categoryWidth));
+
+                sb.AppendLine();
             }
+
+            Console.WriteLine(sb.ToString());
         }
         static void ViewAllBooks()
         {
             StringBuilder sb = new StringBuilder();
 
-            int BookNumber = 0;
-
+            int idWidth = 10;
+            int nameWidth = 30;
+            int authorWidth = 30;
+            int copiesWidth = 10;
+            int borrowWidth = 10;
+            int priceWidth = 10;
+            int categoryWidth = 20;
+            int borrowPeriodWidth = 15;
+            // Add header row
+            sb.AppendFormat("{0,-10} {1,-30} {2,-30} {3,-10} {4,-10} {5,-10} {6,-20} {7,-15}","ID", "Name", "Author", "Copies", "Borrowed", "Price", "Category", "Period");
+            sb.AppendLine();
+            sb.AppendLine(new string('-', 120)); // Separator line
             for (int i = 0; i < Books.Count; i++)
             {
-                BookNumber = i + 1;
-                sb.Append("Book ").Append(BookNumber).Append("| ID : ").Append(Books[i].BID);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| name : ").Append(Books[i].BName);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Author : ").Append(Books[i].BAuthor);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Copies : ").Append(Books[i].copies);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Copies Borrow : ").Append(Books[i].CopiesBorrow);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Price : ").Append(Books[i].price);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Categary : ").Append(Books[i].categories);
-                sb.AppendLine();
-                sb.Append("Book ").Append(BookNumber).Append("| Borrow Period : ").Append(Books[i].BorrowPeriod);
-   
-                sb.AppendLine().AppendLine();
-                Console.WriteLine(sb.ToString());
-                sb.Clear();
+                var book = Books[i];
 
+                sb.AppendFormat("{0,-10} {1,-30} {2,-30} {3,-10} {4,-10} {5,-10} {6,-20} {7,-15}",
+               book.BID.ToString().PadRight(idWidth),
+               book.BName.PadRight(nameWidth),
+               book.BAuthor.PadRight(authorWidth),
+               book.copies.ToString().PadRight(copiesWidth),
+               book.CopiesBorrow.ToString().PadRight(borrowWidth),
+               $"OMR {book.price:0.00}".PadRight(priceWidth), // Format as currency
+               book.categories.PadRight(categoryWidth),
+               book.BorrowPeriod.ToString().PadRight(borrowPeriodWidth));
+
+                sb.AppendLine();
             }
+             Console.WriteLine(sb.ToString());
+
         }
 
         static void SearchForBook()
@@ -419,9 +428,9 @@ namespace BasicLibrary
         static void BorrowBook(int UID)
         {
 
-            Console.WriteLine("Enter Book Name you want to borrow");
-            nameBorrow = Console.ReadLine();
-            if(nameBorrow == null)
+            Console.WriteLine("Enter Book ID you want to borrow");
+            IDBorrow =int.Parse( Console.ReadLine());
+            if(IDBorrow == null)
             {
                 Console.WriteLine("Please Enter the name ");
             }
@@ -431,16 +440,16 @@ namespace BasicLibrary
             {
                 for (int i = 0; i < Books.Count; i++)
                 {
-                    if (Books[i].BName == nameBorrow)
+                    if (Books[i].BID == IDBorrow)
                     {   
                         Console.WriteLine("Book is available for borrowing ");
                         int newq = Books[i].copies - 1;
                         TotalBooks--;
                         Books[i] = (Books[i].BID, Books[i].BName, Books[i].BAuthor, newq, Books[i].CopiesBorrow+1, Books[i].price, Books[i].categories, Books[i].BorrowPeriod);
-                        DateTime BorrowDate =DateTime.Today;
+                        DateTime BorrowDate =DateTime.Now;
                         DateTime returnDate = BorrowDate.AddDays(Books[i].BorrowPeriod);
                   
-                        BorrowList.Add((Books[i].BID, UID,BorrowDate, returnDate, null, null,false));
+                        BorrowList.Add((UID, IDBorrow, BorrowDate, returnDate, null, null,false));
                         Filereport(filereport, usernam, (Books[i].BName, Books[i].BAuthor, Books[1].BID, newq),TotalBooks);
 
                       
@@ -477,14 +486,14 @@ namespace BasicLibrary
         }
         static void ReturnBook(int UID)
         {
-            Console.WriteLine("Enter Book Name you want to return");
-            nameReturn = Console.ReadLine();
+            Console.WriteLine("Enter Book ID you want to return");
+            IDReturn = int.Parse(Console.ReadLine());
             bool flag = false;
             try
             {
                 for (int i = 0; i < Books.Count; i++)
                 {
-                    if (nameBorrow == nameReturn)
+                    if (IDBorrow == IDReturn)
                     {
                         Console.WriteLine("Book has been retrieved ");
                         Console.WriteLine("Please Rating the book from 0 to 5 ");
@@ -493,8 +502,8 @@ namespace BasicLibrary
                         int newq = Books[i].copies + 1;
                         Books[i] = (Books[i].BID, Books[i].BName, Books[i].BAuthor, newq, Books[i].CopiesBorrow-1, Books[i].price, Books[i].categories, Books[i].BorrowPeriod);
                         TotalBooks++;
-                        BorrowList.Add((Books[i].BID, UID, BorrowList[i].BorrowDate,DateTime.Now, BorrowList[i].ActualReturnDate,rat, true));
-                        returnbookfile(filereport, usernam, (nameReturn, Books[i].BAuthor, Books[i].BID, newq),TotalBooks);
+                        BorrowList.Add((UID, IDReturn, BorrowList[i].BorrowDate, BorrowList[i].ReturnDate, DateTime.Now, rat, true));
+                        returnbookfile(filereport, usernam, (Books[i].BName, Books[i].BAuthor, IDBorrow, newq),TotalBooks);
                         SaveBorrowing();
                         flag = true;
                         break;
@@ -523,7 +532,7 @@ namespace BasicLibrary
             {
                 if (Books[i].BID == IdB)
                 {
-                    Console.Write(" A.Book's Name\n B.Author's Name\n C.copies\n D.Categories \n E.price \n F.Borrow Period \n");
+                    Console.Write(" A.Book's Name\n B.Author's Name\n C.copies\n");
                     string ChoiceEdit = Console.ReadLine()?.ToUpper();
 
                     switch (ChoiceEdit)
@@ -547,29 +556,8 @@ namespace BasicLibrary
                             Books[i] = (IdB, Books[i].BName, Books[i].BAuthor,Books[i].copies + newq, Books[i].CopiesBorrow, Books[i].price, Books[i].categories, Books[i].BorrowPeriod);
                             Console.Write(" bOOK'S NAME UPDATED\n ");
                             break;
-                            case "D":
-                            Console.WriteLine("Enter new category of book");
-                            string newcate = Console.ReadLine();
-                            Books[i] = (IdB, Books[i].BName, Books[i].BAuthor,  Books[i].copies, Books[i].CopiesBorrow, Books[i].price, newcate, Books[i].BorrowPeriod);
-                            Console.Write(" bOOK'S category UPDATED\n ");
-                            break;
-                            case "E":
-                            Console.WriteLine("Enter new price of book");
-                            float newprice;
-                      
-                            while (!float.TryParse(Console.ReadLine(), out newprice) || newprice <= 0)
-                            {
-                                Console.Write("price must greater than zero .");
-                            }
-                            Books[i] = (IdB, Books[i].BName, Books[i].BAuthor, Books[i].copies, Books[i].CopiesBorrow, newprice, Books[i].categories, Books[i].BorrowPeriod);
-                            Console.Write(" bOOK'S price UPDATED\n ");
-                            break;
-                            case "F":
-                            Console.Write("Edit bOOK'S Borrow Period: ");
-                            int newp = int.Parse(Console.ReadLine());
-                            Books[i] = (IdB, Books[i].BName, Books[i].BAuthor, Books[i].copies , Books[i].CopiesBorrow, Books[i].price, Books[i].categories, newp);
-                            Console.Write(" bOOK'S Borrow Period UPDATED\n ");
-                            break;
+                            
+                        
                         default:
                             Console.WriteLine("Invalid input");
                             break;
@@ -1009,9 +997,9 @@ namespace BasicLibrary
                 {
                     foreach (var book in BorrowList)
                     {
-                        string actualReturnDate = book.ActualReturnDate.HasValue ? book.ActualReturnDate.Value.ToString() : "N/A";
+                        string actualReturnDate = book.ActualReturnDate.HasValue ? book.ActualReturnDate.Value.ToString("yyyy-MM-dd") : "N/A";
                         string rating = book.Rating.HasValue ? book.Rating.Value.ToString() : "N/A";
-                        writer.WriteLine($"{book.Idbook}|{book.Iduser}|{book.BorrowDate}|{book.ReturnDate}|{actualReturnDate}|{rating}|{book.ISReturned}");
+                        writer.WriteLine($"{book.Iduser}|{book.Idbook}|{book.BorrowDate.ToString("yyyy-MM-dd")}|{book.ReturnDate.ToString("yyyy-MM-dd")}|{actualReturnDate}|{rating}|{book.ISReturned}");
                     }
                 }
                 Console.WriteLine("Books borrowed saved to file successfully.");
@@ -1060,11 +1048,18 @@ namespace BasicLibrary
                 Console.WriteLine("User not found.");
                 return;
             }
-
+           
             Console.WriteLine($"Username: {user.username}");
             Console.WriteLine($"Email: {user.Uemail}");
             Console.WriteLine($"User ID: {user.UID}");
-   
+            for (int i = 0; i < BorrowList.Count; i++)
+            {
+                if (UD == BorrowList[i].Iduser)
+                { 
+                     Console.WriteLine($"ID Books you Borrowed: {BorrowList[i].Idbook}");
+           
+                }
+            }
         }
         static void SaveCateg()
         {
