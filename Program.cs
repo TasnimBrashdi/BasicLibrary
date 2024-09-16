@@ -112,6 +112,9 @@ namespace BasicLibrary
                 {
                     case "A":
                         AddnNewBook();
+                        SaveBooksToFile();
+                        SaveCateg();
+                        ViewAllBooks();
                         break;
 
                     case "B":
@@ -124,9 +127,16 @@ namespace BasicLibrary
                         break;
                     case "D":
                         EditBook();
+                        SaveBooksToFile();
+                        SaveCateg();
+                        ViewAllBooks();
                         break;
                     case "E":
+                        ViewAllBooks();
                         RemoveBook();
+                        SaveBooksToFile();
+                        SaveCateg();
+                     
                         break;
 
                     case "F":
@@ -278,9 +288,7 @@ namespace BasicLibrary
                 Console.WriteLine("Book Added Succefull\n");
                 Console.WriteLine($"Category '{categri}' now has {Categories[categriesIndex].NOFBooks} books.");
             }
-            SaveBooksToFile();
-            SaveCateg();
-            ViewAllBooks();
+        
         }
 
 
@@ -360,11 +368,11 @@ namespace BasicLibrary
             {
                 for (int i = 0; i < Books.Count; i++)
                 {
-                    if (Books[i].BName == name)
+                    if (Books[i].BName.Contains(name))
                     {
-                        Console.WriteLine("Book Author: " + Books[i].BAuthor+ " price: " + Books[i].price+ " categories: " + Books[i].categories);
+                        Console.WriteLine("Book Name: " + Books[i].BName +" Book Author: " + Books[i].BAuthor+ " price: " + Books[i].price+ " categories: " + Books[i].categories);
                         flag = true;
-                        break;
+                    
                     }
                 }
 
@@ -562,7 +570,7 @@ namespace BasicLibrary
                             Console.WriteLine("Invalid input");
                             break;
                     }
-                    SaveBooksToFile();
+              
 
                     flag = true;
                     break;
@@ -572,12 +580,12 @@ namespace BasicLibrary
             if (flag != true)
             { Console.WriteLine("book not found\n"); }
 
-            ViewAllBooks();
+   
 
         }
         static void RemoveBook()
         {
-            ViewAllBooks();
+        
             Console.Write("Enter the ID Book  to remove: ");
             int IdB = int.Parse(Console.ReadLine());
             bool flag = false;
@@ -830,6 +838,8 @@ namespace BasicLibrary
                 Console.WriteLine("Email and Password cannot be empty.");
                 return;
             }
+            Console.WriteLine("re-enter password your Password");
+            string pas2 = Console.ReadLine();
             bool flag = false;
             try
             {
@@ -837,10 +847,13 @@ namespace BasicLibrary
                 {
                     if (User[i].username == usernam && User[i].Upas == pas)
                     {
-                        Console.WriteLine($"           WELCOME: {usernam} ");
-                        flag = true;
-                        userMenu(User[i].UID);
-                        break;
+                        if (pas == pas2)
+                        {
+                            Console.WriteLine($"           WELCOME: {usernam} ");
+                            flag = true;
+                            userMenu(User[i].UID);
+                            break;
+                        }
                     }
                 }
 
@@ -869,6 +882,8 @@ namespace BasicLibrary
                 Console.WriteLine("Email and Password cannot be empty.");
                 return;
             }
+            Console.WriteLine("re-enter password your Password");
+            string pas2 = Console.ReadLine();
             bool flag = false;
             try
             {
@@ -876,10 +891,13 @@ namespace BasicLibrary
                 {
                     if (Admin[i].email == email && Admin[i].pas == pas)
                     {
-                        Console.WriteLine("_______________WELCOME_______________");
-                        flag = true;
-                        adminMenu();
-                        break;
+                        if (pas == pas2)
+                        {
+                            Console.WriteLine("_______________WELCOME_______________");
+                            flag = true;
+                            adminMenu();
+                            break;
+                        }
                     }
                 }
 
