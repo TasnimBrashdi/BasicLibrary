@@ -18,13 +18,13 @@ namespace BasicLibrary
         static List<(int AID,string Aname,string email, string pas)> Admin = new List<(int AID,string Aname,string email, string pas)>();
         static List<(int Iduser , int Idbook, DateTime BorrowDate,DateTime ReturnDate, DateTime? ActualReturnDate,int? Rating,bool ISReturned)> BorrowList = new List<(int Iduser, int Idbook, DateTime BorrowDate, DateTime ReturnDate, DateTime? ActualReturnDate, int? Rating, bool ISReturned)>();
         static List<(int CID, string CName, int NOFBooks)> Categories = new List<(int CID, string CName, int NOFBooks)>();
-        static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
+        static List<(int UID,string username, string Uemail, string Upas)> User = new List<(int UID, string username, string Uemail, string Upas)>();
    
         static string BooksFile = "C:\\Users\\Codeline User\\Documents\\filelib\\BooksFile.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
-        static string UsersFile = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
-        static string AdminsFile = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";
-        static string BorrowingFile = "C:\\Users\\Codeline User\\Documents\\filelib\\borrow.txt";
+        static string UsersFile = "C:\\Users\\Codeline User\\Documents\\filelib\\UsersFile.txt";
+        static string AdminsFile = "C:\\Users\\Codeline User\\Documents\\filelib\\AdminsFile.txt";
+        static string BorrowingFile = "C:\\Users\\Codeline User\\Documents\\filelib\\BorrowingFile.txt";
         static string CategoriesFile = "C:\\Users\\Codeline User\\Documents\\filelib\\CategoriesFile.txt";
         static string usernam;
         static int IDReturn;
@@ -246,67 +246,73 @@ namespace BasicLibrary
             }
             for (int i = 0; i < Nbooks; i++)
             {
-                int  BookId = i + 1;
+                int BookId = i + 1;
                 int Idcate = i + 1;
-                int NOFBooks=0;
+                int NOFBooks = 0;
                 string categri;
                 Console.WriteLine($"Enter Book {BookId}| Name: ");
                 string name = Console.ReadLine();
-
-                Console.WriteLine($"Enter Book {BookId}| Author: ");
-                string author = Console.ReadLine();
-
-
-                Console.WriteLine($"Enter Book {BookId}| copies:");
-                int q;
-                while (!int.TryParse(Console.ReadLine(), out q) || q <= 0)
+                if (name != Books[i].BName)
                 {
-                    Console.Write("copies must be number and greater than zero .");
-                }
-                Console.WriteLine($"Enter Book {BookId}| price:");
-                float price;
-                while (!float.TryParse(Console.ReadLine(), out price) || price <= 0)
-                {
-                    Console.Write("price greater than zero .");
-                }
+                    Console.WriteLine($"Enter Book {BookId}| Author: ");
+                    string author = Console.ReadLine();
 
 
-              
-                if (Categories.Count == 0)
-                {
-                    Console.WriteLine("Error: No categories available.");
-                    return;
-                }
-                Console.WriteLine("Category: ");
-                for (int j = 0; j < Categories.Count; j++)
-                {
-                    Console.WriteLine($"Id: {Categories[j].CID} Name: {Categories[j].CName}");
-                }
-                Console.WriteLine("Select Category:");
-                int categriesIndex = 0;
-                categriesIndex = int.Parse(Console.ReadLine()) - 1;
-                if (categriesIndex < 0 || categriesIndex >= Categories.Count)
-                {
-                    Console.WriteLine("Invalid category selection.");
-                    return;
-                }
-              
-
-                Console.WriteLine($"Enter Book {BookId}| Borrow Period:");
-                int Borrowper;
-                while (!int.TryParse(Console.ReadLine(), out Borrowper) || Borrowper <= 0)
-                {
-                    Console.Write("Borrow Period at least 1.");
-                }
-
-                categri = Categories[categriesIndex].CName;
-                int CopiesBorrow = 0;
-                Books.Add((BookId, name, author, q, CopiesBorrow, price, categri, Borrowper));
+                    Console.WriteLine($"Enter Book {BookId}| copies:");
+                    int q;
+                    while (!int.TryParse(Console.ReadLine(), out q) || q <= 0)
+                    {
+                        Console.Write("copies must be number and greater than zero .");
+                    }
+                    Console.WriteLine($"Enter Book {BookId}| price:");
+                    float price;
+                    while (!float.TryParse(Console.ReadLine(), out price) || price <= 0)
+                    {
+                        Console.Write("price greater than zero .");
+                    }
 
 
-                Categories[categriesIndex]= (Categories[categriesIndex].CID, Categories[categriesIndex].CName, Categories[categriesIndex].NOFBooks + 1);
-                Console.WriteLine("Book Added Succefull\n");
-                Console.WriteLine($"Category '{categri}' now has {Categories[categriesIndex].NOFBooks} books.");
+
+                    if (Categories.Count == 0)
+                    {
+                        Console.WriteLine("Error: No categories available.");
+                        return;
+                    }
+                    Console.WriteLine("Category: ");
+                    for (int j = 0; j < Categories.Count; j++)
+                    {
+                        Console.WriteLine($"Id: {Categories[j].CID} Name: {Categories[j].CName}");
+                    }
+                    Console.WriteLine("Select Category:");
+                    int categriesIndex = 0;
+                    categriesIndex = int.Parse(Console.ReadLine()) - 1;
+                    if (categriesIndex < 0 || categriesIndex >= Categories.Count)
+                    {
+                        Console.WriteLine("Invalid category selection.");
+                        return;
+                    }
+
+
+                    Console.WriteLine($"Enter Book {BookId}| Borrow Period:");
+                    int Borrowper;
+                    while (!int.TryParse(Console.ReadLine(), out Borrowper) || Borrowper <= 0)
+                    {
+                        Console.Write("Borrow Period at least 1.");
+                    }
+
+                    categri = Categories[categriesIndex].CName;
+                    int CopiesBorrow = 0;
+                    Books.Add((BookId, name, author, q, CopiesBorrow, price, categri, Borrowper));
+
+
+                    Categories[categriesIndex] = (Categories[categriesIndex].CID, Categories[categriesIndex].CName, Categories[categriesIndex].NOFBooks + 1);
+                    Console.WriteLine("Book Added Succefull\n");
+                    Console.WriteLine($"Category '{categri}' now has {Categories[categriesIndex].NOFBooks} books.");
+                }
+                else {
+                    Console.WriteLine("We have same Book's Name");
+
+                }
             }
         
         }
@@ -749,28 +755,44 @@ namespace BasicLibrary
         {
             Console.WriteLine("Enter User Name");
             string uname = Console.ReadLine();
-            Console.WriteLine("Enter your Email");
-            string email = Console.ReadLine();
-            if (!IsValidEmail(email))
+            for (int i = 0; i < User.Count; i++)
             {
-                Console.WriteLine("Invalid email, Please enter a valid email address.");
-                return;
+                if (uname != User[i].username)
+                {
+                    Console.WriteLine("Enter your Email");
+                    string email = Console.ReadLine();
+                    if (email != User[i].Uemail)
+                    {
+                        if (!IsValidEmail(email))
+                        {
+                            Console.WriteLine("Invalid email, Please enter a valid email address.");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("This email already register");
+                    }
+                    Console.WriteLine("Enter your Password");
+                    string pas = Console.ReadLine();
+                    if (!IsValidPass(pas))
+                    {
+                        Console.WriteLine("Invalid Password,at last 8 character ,one sympol ,and one capital letter");
+                        return;
+                    }
+                    if (string.IsNullOrWhiteSpace(uname) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pas))
+                    {
+                        Console.WriteLine("User name,Email and Password cannot be empty.");
+                        return;
+                    }
+                    User.Add((nextIdUser++, uname, email, pas));
+                    Console.WriteLine("User Added Succefull\n");
+                    SaveUserToFile();
+                }
+                else {
+                    Console.WriteLine("User name not avalibale");
+                }
             }
-
-            Console.WriteLine("Enter your Password");
-            string pas = Console.ReadLine();
-            if (!IsValidPass(pas)) {
-                Console.WriteLine("Invalid Password,at last 8 character ,one sympol ,and one capital letter");
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(uname) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pas))
-            {
-                Console.WriteLine("User name,Email and Password cannot be empty.");
-                return;
-            }
-            User.Add((uname, email, pas, nextIdUser++));
-            Console.WriteLine("User Added Succefull\n");
-            SaveUserToFile();
         }
       
         static void SaveUserToFile()
@@ -804,10 +826,10 @@ namespace BasicLibrary
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            var parts = line.Split('|');
+                            var parts = line.Split(" | ");
                             if (parts.Length == 4)
                             {
-                                User.Add((parts[0], parts[1], parts[2], int.Parse(parts[3])));
+                                User.Add((int.Parse(parts[0]),parts[1], parts[2], parts[3]));
                             }
                         }
                     }
@@ -831,7 +853,7 @@ namespace BasicLibrary
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            var parts = line.Split('|');
+                            var parts = line.Split(" | ");
                             if (parts.Length ==4)
                             {
                                 Admin.Add((int.Parse(parts[0]),parts[1], parts[2], parts[3]));
@@ -1061,9 +1083,9 @@ namespace BasicLibrary
                             var parts = line.Split('|');
                             if (parts.Length == 7)
                             {
-                                DateTime? actualReturnDate = parts[4].Equals("N/A", StringComparison.OrdinalIgnoreCase) ? (DateTime?)null : DateTime.Parse(parts[4]);
+                                DateTime? actualReturnDate = parts[4].Equals(" N/A ", StringComparison.OrdinalIgnoreCase) ? (DateTime?)null : DateTime.Parse(parts[4]);
                             
-                                int? rating = parts[5].Equals("N/A", StringComparison.OrdinalIgnoreCase) ? (int?)null : int.Parse(parts[5]);
+                                int? rating = parts[5].Equals(" N/A ", StringComparison.OrdinalIgnoreCase) ? (int?)null : int.Parse(parts[5]);
                                 BorrowList.Add((int.Parse(parts[0]),int.Parse(parts[1]), DateTime.Parse(parts[2]), DateTime.Parse(parts[3]), actualReturnDate, rating, bool.Parse(parts[6])));
                                 
                             }
@@ -1145,20 +1167,24 @@ namespace BasicLibrary
         }
         static void ShowReport()
         {
-       
-       
-     
-            int totalCategories = Categories.Count;
 
-          
+
+
+            Console.WriteLine("Total Books: " + TotalBooks);
+            int totalCategories = Categories.Count;
+            Console.WriteLine("Total Categories: " + totalCategories);
+       
+            for (int j = 0; j < Categories.Count; j++)
+            {
+                Console.WriteLine($"Id: {Categories[j].CID} Name: {Categories[j].CName} Number of books: {Categories[j].NOFBooks}");
+            }
+
             int totalBooksBorrowed = BorrowList.Count(b => !b.ISReturned);
 
 
             int totalBooksReturned = BorrowList.Count(b => b.ISReturned);
 
      
-            Console.WriteLine("Total Books: "+TotalBooks);
-            Console.WriteLine("Total Categories: " + totalCategories);
             Console.WriteLine("Total Books Borrowed: " + totalBooksBorrowed);
             Console.WriteLine("Total Books Returned: " + totalBooksReturned);
 
