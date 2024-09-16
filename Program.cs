@@ -165,18 +165,26 @@ namespace BasicLibrary
         static void userMenu(int UID)
         {
 
+          
+            bool hasUnreturnedBooks = BorrowList.Any(b => b.Iduser == UID && !b.ISReturned);
 
             bool ExitFlag = false;
 
 
             do
             {
-                Console.WriteLine("\n Enter the char of operation you need :");
-                Console.WriteLine("\n A- Search Book");
-                Console.WriteLine("\n B- Borrow Books");
-                Console.WriteLine("\n C- return Book");
-                Console.WriteLine("\n D- View Profile");
-                Console.WriteLine("\n E- Log Out");
+                Console.WriteLine("\nEnter the char of operation you need:");
+                Console.WriteLine("\nA- Search Book");
+                Console.WriteLine("\nB- Borrow Books");
+
+             
+                if (hasUnreturnedBooks)
+                {
+                    Console.WriteLine("\nC- Return Book");
+                }
+
+                Console.WriteLine("\nD- View Profile");
+                Console.WriteLine("\nE- Log Out");
 
                 string choice = Console.ReadLine()?.ToUpper();
 
@@ -188,30 +196,38 @@ namespace BasicLibrary
                         break;
 
                     case "B":
-                        Console.WriteLine("\n List of book available");
+                        Console.WriteLine("\nList of books available:");
                         ViewAllBooksuser();
                         BorrowBook(UID);
                         break;
 
                     case "C":
-                        ReturnBook(UID);
+                        if (hasUnreturnedBooks)
+                        {
+                            ReturnBook(UID);
+                        }
+                        else
+                        {
+                            Console.WriteLine("You have no books to return.");
+                        }
                         break;
+
                     case "D":
                         ViewProfile(UID);
                         break;
+
                     case "E":
-                        Console.WriteLine("You have succeessfully logged out");
+                        Console.WriteLine("You have successfully logged out.");
                         ExitFlag = true;
                         break;
+
                     default:
-                        Console.WriteLine("Sorry your choice was wrong");
+                        Console.WriteLine("Sorry, your choice was wrong.");
                         break;
-
-
-
-
                 }
 
+                
+                hasUnreturnedBooks = BorrowList.Any(b => b.Iduser == UID && !b.ISReturned);
                 Console.WriteLine("press any key to continue");
                 string cont = Console.ReadLine();
 
@@ -1078,7 +1094,7 @@ namespace BasicLibrary
             {
                 if (UD == BorrowList[i].Iduser)
                 { 
-                     Console.WriteLine($"ID Books you Borrowed: {BorrowList[i].Idbook}");
+                     Console.WriteLine($"ID Books you Borrowed: {BorrowList[i].Idbook}, is Retruned: {BorrowList[i].ISReturned}");
            
                 }
             }
