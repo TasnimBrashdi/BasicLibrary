@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
@@ -16,9 +17,9 @@ namespace BasicLibrary
         static List<(int BID, string BName, string BAuthor, int copies, int CopiesBorrow,float price,string categories,int BorrowPeriod)> Books = new List<(int BID, string BName, string BAuthor,int copies, int CopiesBorrow,float price, string categories,int BorrowPeriod)>();
         static List<(int AID,string Aname,string email, string pas)> Admin = new List<(int AID,string Aname,string email, string pas)>();
         static List<(int Iduser , int Idbook, DateTime BorrowDate,DateTime ReturnDate, DateTime? ActualReturnDate,int? Rating,bool ISReturned)> BorrowList = new List<(int Iduser, int Idbook, DateTime BorrowDate, DateTime ReturnDate, DateTime? ActualReturnDate, int? Rating, bool ISReturned)>();
-
+        static List<(int CID, string CName, int NOFBooks)> Categories = new List<(int CID, string CName, int NOFBooks)>();
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
-        static List<(int CID,string CName, int NOFBooks)> Categories = new List<(int CID,string CName, int NOFBooks)>();
+   
         static string BooksFile = "C:\\Users\\Codeline User\\Documents\\filelib\\BooksFile.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
         static string UsersFile = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
@@ -104,7 +105,8 @@ namespace BasicLibrary
                 Console.WriteLine("\n C- Search Book");
                 Console.WriteLine("\n D- Edit Book");
                 Console.WriteLine("\n E- Remove Book");
-                Console.WriteLine("\n F- log out");
+                Console.WriteLine("\n F- Report");
+                Console.WriteLine("\n G- log out");
 
                 string choice = Console.ReadLine()?.ToUpper();
 
@@ -138,8 +140,10 @@ namespace BasicLibrary
                         SaveCateg();
                      
                         break;
-
                     case "F":
+                        ShowReport();
+                        break;
+                    case "G":
                         Console.WriteLine("You have succeessfully logged out");
                         ExitFlag = true;
                         break;
@@ -1122,6 +1126,26 @@ namespace BasicLibrary
             {
                 Console.WriteLine($"Error loading Categories from file: {ex.Message}");
             }
+        }
+        static void ShowReport()
+        {
+       
+       
+     
+            int totalCategories = Categories.Count;
+
+          
+            int totalBooksBorrowed = BorrowList.Count(b => !b.ISReturned);
+
+
+            int totalBooksReturned = BorrowList.Count(b => b.ISReturned);
+
+     
+            Console.WriteLine("Total Books: "+TotalBooks);
+            Console.WriteLine("Total Categories: " + totalCategories);
+            Console.WriteLine("Total Books Borrowed: " + totalBooksBorrowed);
+            Console.WriteLine("Total Books Returned: " + totalBooksReturned);
+
         }
 
 
