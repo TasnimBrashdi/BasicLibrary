@@ -161,7 +161,8 @@ namespace BasicLibrary
                 Console.WriteLine("\n A- Search Book");
                 Console.WriteLine("\n B- Borrow Books");
                 Console.WriteLine("\n C- return Book");
-                Console.WriteLine("\n D- Log Out");
+                Console.WriteLine("\n D- View Profile");
+                Console.WriteLine("\n E- Log Out");
 
                 string choice = Console.ReadLine()?.ToUpper();
 
@@ -182,6 +183,9 @@ namespace BasicLibrary
                         ReturnBook(UID);
                         break;
                     case "D":
+                        ViewProfile(UID);
+                        break;
+                    case "E":
                         Console.WriteLine("You have succeessfully logged out");
                         ExitFlag = true;
                         break;
@@ -1047,9 +1051,20 @@ namespace BasicLibrary
                 Console.WriteLine($"Error loading from file: {ex.Message}");
             }
         }
-        static void ViewProfile(int uid,string username,string ema,string borrowbook)
+        static void ViewProfile(int UD)
         {
+            var user = User.FirstOrDefault(u => u.UID == UD);
             
+            if (user == default)
+            {
+                Console.WriteLine("User not found.");
+                return;
+            }
+
+            Console.WriteLine($"Username: {user.username}");
+            Console.WriteLine($"Email: {user.Uemail}");
+            Console.WriteLine($"User ID: {user.UID}");
+   
         }
         static void SaveCateg()
         {
