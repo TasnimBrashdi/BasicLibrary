@@ -247,6 +247,7 @@ namespace BasicLibrary
                 Console.WriteLine("Book Added Succefull\n");
             }
             SaveBooksToFile();
+            SaveCateg();
             ViewAllBooks();
         }
 
@@ -1021,6 +1022,50 @@ namespace BasicLibrary
         static void ViewProfile(int uid,string username,string ema,string borrowbook)
         {
             
+        }
+        static void SaveCateg()
+        {
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(CategoriesFile))
+                {
+                    foreach (var cate in Categories)
+                    {
+                        writer.WriteLine($"{cate.CID}|{cate.CName}|{cate.NOFBooks}|");
+                    }
+                }
+                Console.WriteLine("Categories saved to file successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving Categories to file: {ex.Message}");
+            }
+        }
+        static void LoadCategories()
+        {
+            try
+            {
+                if (File.Exists(CategoriesFile))
+                {
+                    using (StreamReader reader = new StreamReader(CategoriesFile))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            var parts = line.Split('|');
+                            if (parts.Length == 3)
+                            {
+                                Categories.Add((int.Parse(parts[0]), parts[1],int.Parse(parts[2])));
+                            }
+                        }
+                    }
+                    Console.WriteLine("Categories loaded from file successfully.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading Categories from file: {ex.Message}");
+            }
         }
 
 
