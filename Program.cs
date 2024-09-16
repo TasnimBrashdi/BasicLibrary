@@ -19,7 +19,7 @@ namespace BasicLibrary
 
         static List<(string username, string Uemail, string Upas, int UID)> User = new List<(string username, string Uemail, string Upas, int UID)>();
         static List<(int CID,string CName, int NOFBooks)> Categories = new List<(int CID,string CName, int NOFBooks)>();
-        static string BooksFile = "C:\\Users\\Codeline User\\Documents\\filelib\\lib.txt";
+        static string BooksFile = "C:\\Users\\Codeline User\\Documents\\filelib\\BooksFile.txt";
         static string filereport = "C:\\Users\\Codeline User\\Documents\\filelib\\report.txt";
         static string UsersFile = "C:\\Users\\Codeline User\\Documents\\filelib\\user.txt";
         static string AdminsFile = "C:\\Users\\Codeline User\\Documents\\filelib\\admin.txt";
@@ -40,6 +40,7 @@ namespace BasicLibrary
             LoadUser();
             LoadBooksFromFile();
             loadBorrow();
+            LoadCategories();
             TotalBook();
             try
             {
@@ -213,6 +214,8 @@ namespace BasicLibrary
             {
                 int  BookId = i + 1;
                 int Idcate = i + 1;
+                int NOFBooks=0;
+                string categri;
                 Console.WriteLine($"Enter Book {BookId}| Name: ");
                 string name = Console.ReadLine();
 
@@ -232,19 +235,44 @@ namespace BasicLibrary
                 {
                     Console.Write("price greater than zero .");
                 }
-                Console.WriteLine($"Enter Book {BookId}| Categery: ");
-                string cate = Console.ReadLine();
-                Console.WriteLine($"Enter Book {BookId}| BorrowPeriod:");
+
+
+              
+                if (Categories.Count == 0)
+                {
+                    Console.WriteLine("Error: No categories available.");
+                    return;
+                }
+                Console.WriteLine("Category: ");
+                for (int j = 0; j < Categories.Count; j++)
+                {
+                    Console.WriteLine($"Id: {Categories[j].CID} Name: {Categories[j].CName}");
+                }
+                Console.WriteLine("Select Category:");
+                int categriesIndex = 0;
+                categriesIndex = int.Parse(Console.ReadLine()) - 1;
+                if (categriesIndex < 0 || categriesIndex >= Categories.Count)
+                {
+                    Console.WriteLine("Invalid category selection.");
+                    return;
+                }
+              
+
+                Console.WriteLine($"Enter Book {BookId}| Borrow Period:");
                 int Borrowper;
                 while (!int.TryParse(Console.ReadLine(), out Borrowper) || Borrowper <= 0)
                 {
                     Console.Write("Borrow Period at least 1.");
                 }
+
+                categri = Categories[categriesIndex].CName;
                 int CopiesBorrow = 0;
-                Books.Add((BookId, name, author,  q, CopiesBorrow, price, cate, Borrowper));
-                int NOFBooks = i+1;
-                Categories.Add((Idcate, cate, NOFBooks));
+                Books.Add((BookId, name, author, q, CopiesBorrow, price, categri, Borrowper));
+
+
+                Categories[categriesIndex]= (Categories[categriesIndex].CID, Categories[categriesIndex].CName, Categories[categriesIndex].NOFBooks + 1);
                 Console.WriteLine("Book Added Succefull\n");
+                Console.WriteLine($"Category '{categri}' now has {Categories[categriesIndex].NOFBooks} books.");
             }
             SaveBooksToFile();
             SaveCateg();
@@ -1052,7 +1080,7 @@ namespace BasicLibrary
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            var parts = line.Split('|');
+                            var parts = line.Split(" | ");
                             if (parts.Length == 3)
                             {
                                 Categories.Add((int.Parse(parts[0]), parts[1],int.Parse(parts[2])));
