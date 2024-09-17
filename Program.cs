@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Numerics;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -173,19 +174,21 @@ namespace BasicLibrary
 
             do
             {
-                Console.WriteLine("\nEnter the char of operation you need:");
-                Console.WriteLine("\nA- Search Book");
-                Console.WriteLine("\nB- Borrow Books");
 
-             
                 if (hasUnreturnedBooks)
                 {
                     Console.WriteLine("\nC- Return Book");
                 }
+                else
+                {
+                    Console.WriteLine("\nEnter the char of operation you need:");
+                    Console.WriteLine("\nA- Search Book");
+                    Console.WriteLine("\nB- Borrow Books");
+                    Console.WriteLine("\nC- Return Book");
 
-                Console.WriteLine("\nD- View Profile");
-                Console.WriteLine("\nE- Log Out");
-
+                    Console.WriteLine("\nD- View Profile");
+                    Console.WriteLine("\nE- Log Out");
+                }
                 string choice = Console.ReadLine()?.ToUpper();
 
                 switch (choice)
@@ -374,7 +377,7 @@ namespace BasicLibrary
                book.BAuthor.PadRight(authorWidth),
                book.copies.ToString().PadRight(copiesWidth),
                book.CopiesBorrow.ToString().PadRight(borrowWidth),
-               $"OMR {book.price:0.00}".PadRight(priceWidth), // Format as currency
+               $"OMR {book.price:0.00}".PadRight(priceWidth), 
                book.categories.PadRight(categoryWidth),
                book.BorrowPeriod.ToString().PadRight(borrowPeriodWidth));
 
@@ -737,7 +740,7 @@ namespace BasicLibrary
         static bool IsValidEmail(string email)
         {
 
-            return !string.IsNullOrWhiteSpace(email) && email.Contains("@") && email.EndsWith(".com");
+            return !string.IsNullOrWhiteSpace(email) && email.Contains("@") &&( email.EndsWith(".com")||email.EndsWith(".edu"));
         }
         static bool IsValidPass(string pas)
         {
@@ -900,7 +903,25 @@ namespace BasicLibrary
                 }
 
                 if (flag != true)
-                { Console.WriteLine("User not found Or input invaild"); }
+                { Console.WriteLine("User not found Or input invaild");
+                  Console.WriteLine("If NOT regiester Do you want to sign in? y/n");
+                    bool ExitFlag = false;
+                    string yn=Console.ReadLine();
+                   
+                        switch (yn) {
+                            case "y":
+                                RegisterUser();
+                                break;
+                            case "n":
+                                ExitFlag = true;
+                                break;
+                            default:
+                                Console.WriteLine("Invaild");
+                                break;
+                        }
+                    
+                 
+                }
             }
 
             catch (Exception e)
@@ -1083,9 +1104,9 @@ namespace BasicLibrary
                             var parts = line.Split('|');
                             if (parts.Length == 7)
                             {
-                                DateTime? actualReturnDate = parts[4].Equals(" N/A ", StringComparison.OrdinalIgnoreCase) ? (DateTime?)null : DateTime.Parse(parts[4]);
+                                DateTime? actualReturnDate = parts[4].Equals("N/A", StringComparison.OrdinalIgnoreCase) ? (DateTime?)null : DateTime.Parse(parts[4]);
                             
-                                int? rating = parts[5].Equals(" N/A ", StringComparison.OrdinalIgnoreCase) ? (int?)null : int.Parse(parts[5]);
+                                int? rating = parts[5].Equals("N/A", StringComparison.OrdinalIgnoreCase) ? (int?)null : int.Parse(parts[5]);
                                 BorrowList.Add((int.Parse(parts[0]),int.Parse(parts[1]), DateTime.Parse(parts[2]), DateTime.Parse(parts[3]), actualReturnDate, rating, bool.Parse(parts[6])));
                                 
                             }
@@ -1176,7 +1197,7 @@ namespace BasicLibrary
        
             for (int j = 0; j < Categories.Count; j++)
             {
-                Console.WriteLine($"Id: {Categories[j].CID} Name: {Categories[j].CName} Number of books: {Categories[j].NOFBooks}");
+                Console.WriteLine($"Id: {Categories[j].CID} | Name: {Categories[j].CName} | Number of books: {Categories[j].NOFBooks}");
             }
 
             int totalBooksBorrowed = BorrowList.Count(b => !b.ISReturned);
